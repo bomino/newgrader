@@ -1,4 +1,6 @@
 import streamlit as st
+from modules import database as db
+from modules.pages import classes
 
 st.set_page_config(
     page_title="NewGrader",
@@ -47,14 +49,19 @@ def main():
         *Select a page from the sidebar to get started.*
         """)
 
-        # Quick stats placeholder
+        # Quick stats from database
+        counts = db.get_total_counts()
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Classes", "0")
+            st.metric("Classes", counts.get("classes", 0))
         with col2:
-            st.metric("Students", "0")
+            st.metric("Students", counts.get("students", 0))
         with col3:
-            st.metric("Assignments", "0")
+            st.metric("Assignments", counts.get("assignments", 0))
+
+    elif selection == "Classes":
+        classes.render()
+
     else:
         st.title(selection)
         st.info(f"The {selection} page will be implemented soon.")
