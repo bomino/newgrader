@@ -32,8 +32,8 @@ def apply_custom_css():
         top: 80px;
         width: 44px;
         height: 70px;
-        background-color: #1e3a5f;
-        border: 2px solid #3182ce;
+        background-color: #d69e2e;
+        border: 2px solid #b7791f;
         border-left: none;
         border-radius: 0 10px 10px 0;
         cursor: pointer;
@@ -44,7 +44,7 @@ def apply_custom_css():
         box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.4);
         transition: all 0.2s ease;
     " onclick="toggleSidebar()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
             <polyline points="9 18 15 12 9 6"></polyline>
         </svg>
     </div>
