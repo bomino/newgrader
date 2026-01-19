@@ -24,132 +24,117 @@ COLORS = {
 def apply_custom_css():
     """Apply custom CSS styling to the entire app."""
 
-    # Add a floating menu button - only visible when sidebar is collapsed
+    # Add custom expand button with JavaScript
     st.markdown("""
-    <div id="floating-menu-btn" onclick="openSidebar()" style="
+    <div id="customSidebarToggle" style="
         position: fixed;
-        left: 8px;
-        top: 14px;
-        width: 40px;
-        height: 40px;
+        left: 0;
+        top: 80px;
+        width: 44px;
+        height: 70px;
         background-color: #1e3a5f;
         border: 2px solid #3182ce;
-        border-radius: 8px;
+        border-left: none;
+        border-radius: 0 10px 10px 0;
         cursor: pointer;
         z-index: 999999;
         display: none;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        transition: all 0.3s ease;
-    ">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
+        box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.4);
+        transition: all 0.2s ease;
+    " onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
         </svg>
     </div>
 
     <script>
-    function openSidebar() {
-        console.log('Opening sidebar...');
+    function toggleSidebar() {
+        // Try to find and click Streamlit's native button
+        const selectors = [
+            '[data-testid="collapsedControl"]',
+            '[data-testid="stSidebarCollapsedControl"]',
+            'button[aria-label="Expand sidebar"]',
+            'button[aria-label="Open sidebar"]',
+            '[data-testid="stSidebar"] button[kind="header"]'
+        ];
 
-        // Method 1: Find and click the collapsed control button
-        const collapsedControl = document.querySelector('[data-testid="collapsedControl"]');
-        if (collapsedControl) {
-            console.log('Found collapsedControl');
-            const btn = collapsedControl.querySelector('button') || collapsedControl;
-            btn.click();
-            return;
-        }
-
-        // Method 2: Find button with specific test id
-        const baseButton = document.querySelector('[data-testid="baseButton-header"]');
-        if (baseButton) {
-            console.log('Found baseButton-header');
-            baseButton.click();
-            return;
-        }
-
-        // Method 3: Find the expand icon button
-        const allButtons = document.querySelectorAll('button');
-        for (let btn of allButtons) {
-            const svg = btn.querySelector('svg');
-            const ariaLabel = btn.getAttribute('aria-label') || '';
-            const title = btn.getAttribute('title') || '';
-
-            if (ariaLabel.toLowerCase().includes('expand') ||
-                title.toLowerCase().includes('expand') ||
-                ariaLabel.toLowerCase().includes('open') ||
-                title.toLowerCase().includes('open')) {
-                console.log('Found expand button via aria-label/title');
+        for (const selector of selectors) {
+            const btn = document.querySelector(selector);
+            if (btn) {
                 btn.click();
                 return;
             }
         }
 
-        // Method 4: Directly manipulate sidebar CSS
+        // Fallback: Try to manipulate sidebar directly
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        const sidebarContent = document.querySelector('[data-testid="stSidebarContent"]');
-
         if (sidebar) {
-            console.log('Forcing sidebar open via CSS');
-            sidebar.style.width = '336px';
-            sidebar.style.minWidth = '336px';
-            sidebar.style.transform = 'none';
-            sidebar.style.marginLeft = '0';
             sidebar.setAttribute('aria-expanded', 'true');
-
-            // Also try to find parent container
-            const sidebarNav = sidebar.closest('[data-testid="stSidebarNav"]') ||
-                              sidebar.parentElement;
-            if (sidebarNav) {
-                sidebarNav.style.width = '336px';
-                sidebarNav.style.transform = 'none';
-            }
+            sidebar.style.transform = 'translateX(0)';
+            sidebar.style.width = '21rem';
         }
-
-        // Method 5: Trigger resize event (sometimes helps Streamlit recalculate)
-        window.dispatchEvent(new Event('resize'));
     }
 
-    // Check sidebar state and show/hide hamburger button
+    // Monitor sidebar state and show/hide custom button
     function checkSidebarState() {
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        const floatingBtn = document.getElementById('floating-menu-btn');
+        const customBtn = document.getElementById('customSidebarToggle');
 
-        if (!floatingBtn) return;
-
-        if (sidebar) {
-            const rect = sidebar.getBoundingClientRect();
-            const isVisible = rect.width > 50 && rect.left >= -10;
-            floatingBtn.style.display = isVisible ? 'none' : 'flex';
-        } else {
-            // No sidebar found, show the button
-            floatingBtn.style.display = 'flex';
+        if (!sidebar || !customBtn) {
+            setTimeout(checkSidebarState, 500);
+            return;
         }
+
+        const isCollapsed = sidebar.getAttribute('aria-expanded') === 'false' ||
+                           sidebar.style.transform.includes('-') ||
+                           window.getComputedStyle(sidebar).transform.includes('-');
+
+        customBtn.style.display = isCollapsed ? 'flex' : 'none';
     }
 
-    // Check sidebar state periodically
+    // Run check periodically
     setInterval(checkSidebarState, 300);
 
-    // Initial checks
-    setTimeout(checkSidebarState, 500);
+    // Initial check after page load
     setTimeout(checkSidebarState, 1000);
-    setTimeout(checkSidebarState, 2000);
     </script>
     """, unsafe_allow_html=True)
 
     st.markdown("""
     <style>
     /* ============================================
-       FLOATING MENU BUTTON
+       SIDEBAR EXPAND/COLLAPSE BUTTON - NATIVE STREAMLIT
        ============================================ */
 
-    #floating-menu-btn:hover {
+    /* Style Streamlit's native collapsed control */
+    [data-testid="collapsedControl"] {
+        background-color: #1e3a5f !important;
+        border: 2px solid #3182ce !important;
+        border-left: none !important;
+        border-radius: 0 10px 10px 0 !important;
+        width: 44px !important;
+        height: 70px !important;
+        left: 0 !important;
+        top: 80px !important;
+        position: fixed !important;
+        z-index: 999998 !important;
+        box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.4) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    [data-testid="collapsedControl"]:hover {
         background-color: #3182ce !important;
-        transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
+        width: 50px !important;
+    }
+
+    [data-testid="collapsedControl"] svg {
+        width: 24px !important;
+        height: 24px !important;
+        stroke: white !important;
+        color: white !important;
     }
 
     /* ============================================
