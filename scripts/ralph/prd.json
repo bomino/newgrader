@@ -71,8 +71,8 @@
         "Helper functions for assignment CRUD"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed: Added all tables and CRUD functions to database.py"
     },
     {
       "id": "US-006",
