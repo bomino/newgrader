@@ -1,6 +1,6 @@
 import streamlit as st
 from modules import database as db
-from modules.pages import classes, students, assignments
+from modules.pages import classes, students, assignments, grade_entry, auto_grade, gradebook, settings
 
 st.set_page_config(
     page_title="NewGrader",
@@ -68,9 +68,17 @@ def main():
     elif selection == "Assignments":
         assignments.render()
 
-    else:
-        st.title(selection)
-        st.info(f"The {selection} page will be implemented soon.")
+    elif selection == "Grade Entry":
+        grade_entry.render()
+
+    elif selection == "Auto-Grade":
+        auto_grade.render()
+
+    elif selection == "Gradebook":
+        gradebook.render()
+
+    elif selection == "Settings":
+        settings.render()
 
 if __name__ == "__main__":
     main()

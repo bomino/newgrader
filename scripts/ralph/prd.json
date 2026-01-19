@@ -99,8 +99,8 @@
         "Show existing grades when editing"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed: Created modules/pages/grade_entry.py with editable grid and stats"
     },
     {
       "id": "US-008",
@@ -113,8 +113,8 @@
         "Save answer key to database"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed: Created in modules/pages/auto_grade.py (Answer Key tab)"
     },
     {
       "id": "US-009",
@@ -128,8 +128,8 @@
         "Option to save grades to database"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed: Created in modules/pages/auto_grade.py (Grade Responses tab)"
     },
     {
       "id": "US-010",
@@ -142,8 +142,8 @@
         "Highlight missing assignments"
       ],
       "priority": 10,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed: Created modules/pages/gradebook.py with full gradebook matrix"
     },
     {
       "id": "US-011",
@@ -155,8 +155,8 @@
         "Use configured scale in grade calculations"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed: Created modules/pages/settings.py with grade scale config"
     },
     {
       "id": "US-012",
@@ -169,8 +169,8 @@
         "Download button for each export"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed: Export functionality in gradebook.py (Excel, CSV, Summary)"
     }
   ]
 }
