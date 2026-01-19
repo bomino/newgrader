@@ -43,7 +43,7 @@ def apply_custom_css():
         justify-content: center;
         box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.4);
         transition: all 0.2s ease;
-    " onclick="toggleSidebar()">
+    ">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
             <polyline points="9 18 15 12 9 6"></polyline>
         </svg>
@@ -125,6 +125,24 @@ def apply_custom_css():
     setTimeout(checkSidebarState, 500);
     setTimeout(checkSidebarState, 1000);
     setTimeout(checkSidebarState, 2000);
+
+    // Add click event listener (avoid inline onclick which conflicts with React)
+    function setupClickHandler() {
+        const btn = document.getElementById('customSidebarToggle');
+        if (btn && !btn.hasAttribute('data-listener-added')) {
+            btn.setAttribute('data-listener-added', 'true');
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleSidebar();
+            });
+        }
+    }
+
+    // Setup click handler after DOM is ready
+    setTimeout(setupClickHandler, 100);
+    setTimeout(setupClickHandler, 500);
+    setTimeout(setupClickHandler, 1000);
     </script>
     """, unsafe_allow_html=True)
 
