@@ -24,42 +24,6 @@ COLORS = {
 def apply_custom_css():
     """Apply custom CSS styling to the entire app."""
 
-    # JavaScript to ensure sidebar is visible on load
-    st.markdown("""
-    <script>
-    // Ensure sidebar is expanded on page load
-    function ensureSidebarVisible() {
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            // Set sidebar to expanded state
-            sidebar.setAttribute('aria-expanded', 'true');
-            sidebar.style.transform = 'translateX(0)';
-            sidebar.style.width = '21rem';
-            sidebar.style.visibility = 'visible';
-
-            // Also check for collapsed control and hide it if sidebar is visible
-            const collapsedControl = document.querySelector('[data-testid="collapsedControl"]');
-            if (collapsedControl && sidebar.getAttribute('aria-expanded') === 'true') {
-                collapsedControl.style.display = 'none';
-            }
-        }
-    }
-
-    // Run on DOM ready and after delays to catch Streamlit initialization
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', ensureSidebarVisible);
-    } else {
-        ensureSidebarVisible();
-    }
-
-    // Run multiple times to catch any late initialization
-    setTimeout(ensureSidebarVisible, 100);
-    setTimeout(ensureSidebarVisible, 500);
-    setTimeout(ensureSidebarVisible, 1000);
-    setTimeout(ensureSidebarVisible, 2000);
-    </script>
-    """, unsafe_allow_html=True)
-
     st.markdown("""
     <style>
     /* ============================================
@@ -159,25 +123,18 @@ def apply_custom_css():
     /* Ensure sidebar is visible on load */
     [data-testid="stSidebar"] {
         background-color: #1e3a5f;
-        position: fixed !important;
-        left: 0 !important;
-        top: 0 !important;
-        height: 100vh !important;
         z-index: 999 !important;
-        transition: transform 0.3s ease !important;
     }
 
-    /* Make sure expanded sidebar is properly positioned */
-    [data-testid="stSidebar"][aria-expanded="true"] {
-        transform: translateX(0) !important;
-        width: 21rem !important;
-        min-width: 21rem !important;
-        visibility: visible !important;
+    /* Ensure sidebar content area has proper styling */
+    [data-testid="stSidebarContent"] {
+        background-color: #1e3a5f;
     }
 
-    /* Collapsed state */
-    [data-testid="stSidebar"][aria-expanded="false"] {
-        transform: translateX(-100%) !important;
+    /* Sidebar nav area */
+    [data-testid="stSidebarNav"] {
+        background-color: #1e3a5f;
+        padding: 1rem;
     }
 
     [data-testid="stSidebar"] .stMarkdown,
