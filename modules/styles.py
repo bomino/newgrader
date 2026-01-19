@@ -24,131 +24,39 @@ COLORS = {
 def apply_custom_css():
     """Apply custom CSS styling to the entire app."""
 
-    # Add custom expand button with JavaScript
+    # JavaScript to ensure sidebar is visible on load
     st.markdown("""
-    <div id="customSidebarToggle" style="
-        position: fixed;
-        left: 0;
-        top: 80px;
-        width: 44px;
-        height: 70px;
-        background-color: #d69e2e;
-        border: 2px solid #b7791f;
-        border-left: none;
-        border-radius: 0 10px 10px 0;
-        cursor: pointer;
-        z-index: 999999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.4);
-        transition: all 0.2s ease;
-    ">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
-            <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-    </div>
-
     <script>
-    function toggleSidebar() {
-        console.log('toggleSidebar called');
-
+    // Ensure sidebar is expanded on page load
+    function ensureSidebarVisible() {
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (!sidebar) {
-            console.log('Sidebar not found');
-            return;
-        }
+        if (sidebar) {
+            // Set sidebar to expanded state
+            sidebar.setAttribute('aria-expanded', 'true');
+            sidebar.style.transform = 'translateX(0)';
+            sidebar.style.width = '21rem';
+            sidebar.style.visibility = 'visible';
 
-        console.log('Sidebar found, current left:', sidebar.getBoundingClientRect().left);
-
-        // Force sidebar to be visible by setting attribute
-        sidebar.setAttribute('aria-expanded', 'true');
-
-        // Get the sidebar's section element (the actual content container)
-        const section = sidebar.querySelector('section[data-testid="stSidebarContent"]') ||
-                        sidebar.querySelector('section') ||
-                        sidebar;
-
-        // Apply styles directly to section
-        section.style.setProperty('transform', 'none', 'important');
-        section.style.setProperty('width', '21rem', 'important');
-        section.style.setProperty('min-width', '21rem', 'important');
-
-        // Also apply to sidebar
-        sidebar.style.setProperty('transform', 'none', 'important');
-        sidebar.style.setProperty('width', '21rem', 'important');
-        sidebar.style.setProperty('margin-left', '0', 'important');
-
-        // Find and style the sidebar nav container
-        const sidebarNav = document.querySelector('[data-testid="stSidebarNav"]');
-        if (sidebarNav) {
-            sidebarNav.style.setProperty('transform', 'none', 'important');
-        }
-
-        // Try finding ANY element with negative transform and reset it
-        const allElements = sidebar.querySelectorAll('*');
-        allElements.forEach(el => {
-            const transform = window.getComputedStyle(el).transform;
-            if (transform && transform !== 'none') {
-                el.style.setProperty('transform', 'none', 'important');
+            // Also check for collapsed control and hide it if sidebar is visible
+            const collapsedControl = document.querySelector('[data-testid="collapsedControl"]');
+            if (collapsedControl && sidebar.getAttribute('aria-expanded') === 'true') {
+                collapsedControl.style.display = 'none';
             }
-        });
-
-        console.log('After fix, sidebar left:', sidebar.getBoundingClientRect().left);
-
-        // Hide our custom button
-        const customBtn = document.getElementById('customSidebarToggle');
-        if (customBtn) customBtn.style.display = 'none';
-    }
-
-    // Monitor sidebar state and show/hide custom button
-    function checkSidebarState() {
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        const customBtn = document.getElementById('customSidebarToggle');
-
-        if (!customBtn) return;
-
-        // If no sidebar found, keep button visible
-        if (!sidebar) {
-            customBtn.style.display = 'flex';
-            return;
-        }
-
-        // Check if sidebar is EXPANDED (visible)
-        const ariaExpanded = sidebar.getAttribute('aria-expanded');
-        const sidebarLeft = sidebar.getBoundingClientRect().left;
-
-        // Hide button when sidebar is open (expanded), show when collapsed
-        const isExpanded = ariaExpanded === 'true' && sidebarLeft >= 0;
-
-        customBtn.style.display = isExpanded ? 'none' : 'flex';
-    }
-
-    // Run check periodically
-    setInterval(checkSidebarState, 200);
-
-    // Multiple initial checks to catch the state
-    setTimeout(checkSidebarState, 500);
-    setTimeout(checkSidebarState, 1000);
-    setTimeout(checkSidebarState, 2000);
-
-    // Add click event listener (avoid inline onclick which conflicts with React)
-    function setupClickHandler() {
-        const btn = document.getElementById('customSidebarToggle');
-        if (btn && !btn.hasAttribute('data-listener-added')) {
-            btn.setAttribute('data-listener-added', 'true');
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleSidebar();
-            });
         }
     }
 
-    // Setup click handler after DOM is ready
-    setTimeout(setupClickHandler, 100);
-    setTimeout(setupClickHandler, 500);
-    setTimeout(setupClickHandler, 1000);
+    // Run on DOM ready and after delays to catch Streamlit initialization
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', ensureSidebarVisible);
+    } else {
+        ensureSidebarVisible();
+    }
+
+    // Run multiple times to catch any late initialization
+    setTimeout(ensureSidebarVisible, 100);
+    setTimeout(ensureSidebarVisible, 500);
+    setTimeout(ensureSidebarVisible, 1000);
+    setTimeout(ensureSidebarVisible, 2000);
     </script>
     """, unsafe_allow_html=True)
 
@@ -161,30 +69,58 @@ def apply_custom_css():
     /* Style Streamlit's native collapsed control */
     [data-testid="collapsedControl"] {
         background-color: #1e3a5f !important;
-        border: 2px solid #3182ce !important;
+        border: 3px solid #3182ce !important;
         border-left: none !important;
-        border-radius: 0 10px 10px 0 !important;
-        width: 44px !important;
-        height: 70px !important;
+        border-radius: 0 12px 12px 0 !important;
+        width: 48px !important;
+        height: 80px !important;
         left: 0 !important;
-        top: 80px !important;
+        top: 120px !important;
         position: fixed !important;
-        z-index: 999998 !important;
-        box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.4) !important;
+        z-index: 999999 !important;
+        box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.4) !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
         opacity: 1 !important;
         visibility: visible !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     [data-testid="collapsedControl"]:hover {
         background-color: #3182ce !important;
-        width: 50px !important;
+        border-color: #1e3a5f !important;
+        width: 54px !important;
+        box-shadow: 6px 6px 24px rgba(0, 0, 0, 0.5) !important;
     }
 
     [data-testid="collapsedControl"] svg {
-        width: 24px !important;
-        height: 24px !important;
-        stroke: white !important;
         color: white !important;
+        stroke: white !important;
+        fill: white !important;
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    /* Style the button inside collapsed control */
+    [data-testid="collapsedControl"] button {
+        background: transparent !important;
+        border: none !important;
+        width: 100% !important;
+        height: 100% !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* When sidebar is collapsed, ensure button is always visible */
+    [data-testid="stSidebar"][aria-expanded="false"] ~ [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"] {
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 
     /* ============================================
@@ -220,8 +156,28 @@ def apply_custom_css():
        SIDEBAR STYLES
        ============================================ */
 
+    /* Ensure sidebar is visible on load */
     [data-testid="stSidebar"] {
         background-color: #1e3a5f;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        height: 100vh !important;
+        z-index: 999 !important;
+        transition: transform 0.3s ease !important;
+    }
+
+    /* Make sure expanded sidebar is properly positioned */
+    [data-testid="stSidebar"][aria-expanded="true"] {
+        transform: translateX(0) !important;
+        width: 21rem !important;
+        min-width: 21rem !important;
+        visibility: visible !important;
+    }
+
+    /* Collapsed state */
+    [data-testid="stSidebar"][aria-expanded="false"] {
+        transform: translateX(-100%) !important;
     }
 
     [data-testid="stSidebar"] .stMarkdown,
@@ -263,68 +219,6 @@ def apply_custom_css():
     /* Sidebar divider */
     [data-testid="stSidebar"] hr {
         border-color: rgba(255, 255, 255, 0.2) !important;
-    }
-
-    /* Sidebar collapse/expand button - make it VERY visible */
-    [data-testid="collapsedControl"] {
-        background-color: #1e3a5f !important;
-        border: 3px solid #3182ce !important;
-        border-left: none !important;
-        border-radius: 0 12px 12px 0 !important;
-        width: 44px !important;
-        height: 80px !important;
-        left: 0 !important;
-        top: 120px !important;
-        position: fixed !important;
-        z-index: 999999 !important;
-        box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.4) !important;
-        transition: all 0.3s ease !important;
-        cursor: pointer !important;
-        animation: pulse-glow 2s ease-in-out infinite !important;
-    }
-
-    @keyframes pulse-glow {
-        0%, 100% {
-            box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.4), 0 0 8px rgba(49, 130, 206, 0.5);
-        }
-        50% {
-            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(49, 130, 206, 0.8);
-        }
-    }
-
-    [data-testid="collapsedControl"]:hover {
-        background-color: #3182ce !important;
-        border-color: #1e3a5f !important;
-        width: 52px !important;
-        box-shadow: 6px 6px 24px rgba(0, 0, 0, 0.5) !important;
-        animation: none !important;
-    }
-
-    [data-testid="collapsedControl"] svg {
-        color: white !important;
-        stroke: white !important;
-        fill: white !important;
-        width: 28px !important;
-        height: 28px !important;
-    }
-
-    /* Style the button inside collapsed control */
-    [data-testid="collapsedControl"] button {
-        background: transparent !important;
-        border: none !important;
-        width: 100% !important;
-        height: 100% !important;
-        cursor: pointer !important;
-    }
-
-    /* When sidebar is collapsed, ensure button is always visible */
-    [data-testid="stSidebar"][aria-expanded="false"] ~ [data-testid="collapsedControl"],
-    [data-testid="stSidebarCollapsedControl"] {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        opacity: 1 !important;
-        visibility: visible !important;
     }
 
     /* Also target the sidebar header close button */
