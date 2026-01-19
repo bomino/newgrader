@@ -51,44 +51,50 @@ def apply_custom_css():
 
     <script>
     function toggleSidebar() {
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (!sidebar) return;
+        console.log('toggleSidebar called');
 
-        // Force sidebar to be visible
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (!sidebar) {
+            console.log('Sidebar not found');
+            return;
+        }
+
+        console.log('Sidebar found, current left:', sidebar.getBoundingClientRect().left);
+
+        // Force sidebar to be visible by setting attribute
         sidebar.setAttribute('aria-expanded', 'true');
 
-        // Find the inner content section
-        const sidebarContent = sidebar.querySelector('[data-testid="stSidebarContent"]') ||
-                               sidebar.querySelector('section') ||
-                               sidebar.firstElementChild;
+        // Get the sidebar's section element (the actual content container)
+        const section = sidebar.querySelector('section[data-testid="stSidebarContent"]') ||
+                        sidebar.querySelector('section') ||
+                        sidebar;
 
-        // Reset all transforms and positions
-        sidebar.style.cssText += `
-            transform: none !important;
-            left: 0 !important;
-            margin-left: 0 !important;
-            width: 21rem !important;
-            min-width: 21rem !important;
-            visibility: visible !important;
-            display: flex !important;
-        `;
+        // Apply styles directly to section
+        section.style.setProperty('transform', 'none', 'important');
+        section.style.setProperty('width', '21rem', 'important');
+        section.style.setProperty('min-width', '21rem', 'important');
 
-        if (sidebarContent) {
-            sidebarContent.style.cssText += `
-                transform: none !important;
-                left: 0 !important;
-                visibility: visible !important;
-            `;
+        // Also apply to sidebar
+        sidebar.style.setProperty('transform', 'none', 'important');
+        sidebar.style.setProperty('width', '21rem', 'important');
+        sidebar.style.setProperty('margin-left', '0', 'important');
+
+        // Find and style the sidebar nav container
+        const sidebarNav = document.querySelector('[data-testid="stSidebarNav"]');
+        if (sidebarNav) {
+            sidebarNav.style.setProperty('transform', 'none', 'important');
         }
 
-        // Also try parent elements
-        let parent = sidebar.parentElement;
-        while (parent && parent !== document.body) {
-            if (parent.style.transform || window.getComputedStyle(parent).transform !== 'none') {
-                parent.style.transform = 'none';
+        // Try finding ANY element with negative transform and reset it
+        const allElements = sidebar.querySelectorAll('*');
+        allElements.forEach(el => {
+            const transform = window.getComputedStyle(el).transform;
+            if (transform && transform !== 'none') {
+                el.style.setProperty('transform', 'none', 'important');
             }
-            parent = parent.parentElement;
-        }
+        });
+
+        console.log('After fix, sidebar left:', sidebar.getBoundingClientRect().left);
 
         // Hide our custom button
         const customBtn = document.getElementById('customSidebarToggle');
