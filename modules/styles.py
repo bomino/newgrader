@@ -30,26 +30,38 @@ def apply_custom_css():
        SIDEBAR EXPAND/COLLAPSE BUTTON - NATIVE STREAMLIT
        ============================================ */
 
-    /* Style Streamlit's native collapsed control */
-    [data-testid="collapsedControl"] {
+    /* AGGRESSIVE FIX: Force collapsed control to ALWAYS be visible when sidebar is collapsed */
+    [data-testid="collapsedControl"],
+    button[data-testid="collapsedControl"],
+    div[data-testid="collapsedControl"],
+    .css-1cypcdb [data-testid="collapsedControl"],
+    * [data-testid="collapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        left: 0px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        z-index: 2147483647 !important; /* Maximum z-index */
         background-color: #1e3a5f !important;
         border: 3px solid #3182ce !important;
         border-left: none !important;
         border-radius: 0 12px 12px 0 !important;
         width: 48px !important;
         height: 80px !important;
-        left: 0 !important;
-        top: 120px !important;
-        position: fixed !important;
-        z-index: 999999 !important;
+        min-width: 48px !important;
+        min-height: 80px !important;
         box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.4) !important;
-        transition: all 0.3s ease !important;
         cursor: pointer !important;
+        pointer-events: all !important;
+    }
+
+    /* Override ANY attempt to hide it */
+    [data-testid="collapsedControl"]:not(:root) {
+        display: block !important;
         opacity: 1 !important;
         visibility: visible !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
     }
 
     [data-testid="collapsedControl"]:hover {
@@ -81,10 +93,49 @@ def apply_custom_css():
 
     /* When sidebar is collapsed, ensure button is always visible */
     [data-testid="stSidebar"][aria-expanded="false"] ~ [data-testid="collapsedControl"],
-    [data-testid="stSidebarCollapsedControl"] {
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="stSidebar"][aria-expanded="false"] + * [data-testid="collapsedControl"],
+    .stApp > [data-testid="collapsedControl"] {
         display: flex !important;
         opacity: 1 !important;
         visibility: visible !important;
+        pointer-events: all !important;
+    }
+
+    /* Target ALL possible selectors for the collapsed control */
+    button[kind="header"][title*="navigation"],
+    button[aria-label*="navigation"],
+    .stButton button[kind="header"],
+    [data-testid="baseButton-header"],
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="collapsedControl"],
+    div[data-testid="collapsedControl"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        z-index: 999999 !important;
+        background-color: #1e3a5f !important;
+        border: 3px solid #3182ce !important;
+        border-left: none !important;
+        border-radius: 0 12px 12px 0 !important;
+        width: 48px !important;
+        height: 80px !important;
+    }
+
+    /* Ensure Streamlit's default hidden state doesn't apply */
+    .css-1cypcdb [data-testid="collapsedControl"] {
+        display: flex !important;
+    }
+
+    /* Try to catch any parent containers that might be hiding the button */
+    div:has(> [data-testid="collapsedControl"]) {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     /* ============================================
@@ -120,10 +171,18 @@ def apply_custom_css():
        SIDEBAR STYLES
        ============================================ */
 
-    /* Ensure sidebar is visible on load */
+    /* Ensure sidebar is visible on load and stays expanded by default */
     [data-testid="stSidebar"] {
         background-color: #1e3a5f;
         z-index: 999 !important;
+    }
+
+    /* Force sidebar to default to expanded state */
+    [data-testid="stSidebar"]:not([aria-expanded="false"]) {
+        width: 21rem !important;
+        min-width: 21rem !important;
+        transform: translateX(0) !important;
+        visibility: visible !important;
     }
 
     /* Ensure sidebar content area has proper styling */

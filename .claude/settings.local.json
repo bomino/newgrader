@@ -9,7 +9,8 @@
       "Bash(dir:*)",
       "Bash(git add:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nfix: Clean up sidebar implementation and ensure proper visibility\n\n- Removed conflicting custom JavaScript toggle button\n- Consolidated duplicate CSS rules for collapsedControl\n- Added CSS to ensure sidebar is visible and properly positioned\n- Added JavaScript to ensure sidebar expands on page load\n- Improved collapsed control button styling for better visibility\n\nThis removes the conflicting implementations that were causing sidebar issues.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Remove non-functional JavaScript and optimize sidebar CSS\n\n- Removed JavaScript code that was blocked by Streamlit security\n- Simplified sidebar CSS for better reliability\n- Kept Navy Blue theme and white text styling\n- Ensured collapsed control button is properly styled\n\nTests confirm sidebar functionality is working correctly.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Remove non-functional JavaScript and optimize sidebar CSS\n\n- Removed JavaScript code that was blocked by Streamlit security\n- Simplified sidebar CSS for better reliability\n- Kept Navy Blue theme and white text styling\n- Ensured collapsed control button is properly styled\n\nTests confirm sidebar functionality is working correctly.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
