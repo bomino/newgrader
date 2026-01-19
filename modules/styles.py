@@ -103,37 +103,80 @@ def apply_custom_css():
         border-color: rgba(255, 255, 255, 0.2) !important;
     }
 
-    /* Sidebar collapse/expand button - make it very visible */
+    /* Sidebar collapse/expand button - make it VERY visible */
     [data-testid="collapsedControl"] {
         background-color: #1e3a5f !important;
-        border: 2px solid #1e3a5f !important;
-        border-radius: 0 8px 8px 0 !important;
-        width: 32px !important;
-        height: 48px !important;
+        border: 3px solid #3182ce !important;
+        border-left: none !important;
+        border-radius: 0 12px 12px 0 !important;
+        width: 44px !important;
+        height: 80px !important;
         left: 0 !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2) !important;
-        transition: all 0.2s ease !important;
+        top: 120px !important;
+        position: fixed !important;
+        z-index: 999999 !important;
+        box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.4) !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
+        animation: pulse-glow 2s ease-in-out infinite !important;
+    }
+
+    @keyframes pulse-glow {
+        0%, 100% {
+            box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.4), 0 0 8px rgba(49, 130, 206, 0.5);
+        }
+        50% {
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(49, 130, 206, 0.8);
+        }
     }
 
     [data-testid="collapsedControl"]:hover {
-        background-color: #2c5282 !important;
-        border-color: #2c5282 !important;
-        box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.3) !important;
+        background-color: #3182ce !important;
+        border-color: #1e3a5f !important;
+        width: 52px !important;
+        box-shadow: 6px 6px 24px rgba(0, 0, 0, 0.5) !important;
+        animation: none !important;
     }
 
     [data-testid="collapsedControl"] svg {
         color: white !important;
         stroke: white !important;
-        width: 20px !important;
-        height: 20px !important;
+        fill: white !important;
+        width: 28px !important;
+        height: 28px !important;
     }
 
-    /* When sidebar is collapsed, make the button stand out more */
-    [data-testid="stSidebar"][aria-expanded="false"] + [data-testid="collapsedControl"],
-    button[kind="headerNoPadding"] {
-        background-color: #1e3a5f !important;
+    /* Style the button inside collapsed control */
+    [data-testid="collapsedControl"] button {
+        background: transparent !important;
+        border: none !important;
+        width: 100% !important;
+        height: 100% !important;
+        cursor: pointer !important;
+    }
+
+    /* When sidebar is collapsed, ensure button is always visible */
+    [data-testid="stSidebar"][aria-expanded="false"] ~ [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"] {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    /* Also target the sidebar header close button */
+    [data-testid="stSidebar"] button[kind="headerNoPadding"],
+    [data-testid="stSidebar"] [data-testid="baseButton-headerNoPadding"] {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 6px !important;
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    [data-testid="stSidebar"] button[kind="headerNoPadding"]:hover,
+    [data-testid="stSidebar"] [data-testid="baseButton-headerNoPadding"]:hover {
+        background-color: rgba(255, 255, 255, 0.3) !important;
     }
 
     /* ============================================
