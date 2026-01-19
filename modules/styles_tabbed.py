@@ -55,6 +55,20 @@ def apply_custom_css():
         background-color: #f7fafc;
     }
 
+    /* IMPORTANT: Ensure white text on navy backgrounds for accessibility */
+    [style*="background-color: #1e3a5f"],
+    [style*="background:#1e3a5f"],
+    [style*="background: #1e3a5f"] {
+        color: white !important;
+    }
+
+    /* Ensure all child elements also have white text */
+    [style*="background-color: #1e3a5f"] *,
+    [style*="background:#1e3a5f"] *,
+    [style*="background: #1e3a5f"] * {
+        color: white !important;
+    }
+
     /* Hide the sidebar completely */
     [data-testid="stSidebar"] {
         display: none !important;
@@ -304,10 +318,10 @@ def apply_custom_css():
 
 
 def get_page_header_style():
-    """Return the standard page header style."""
+    """Return the standard page header style with white text for contrast."""
     return """
         background-color: #1e3a5f;
-        color: white;
+        color: white !important;
         padding: 2rem;
         border-radius: 8px;
         margin-bottom: 2rem;

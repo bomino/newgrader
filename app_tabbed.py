@@ -33,8 +33,8 @@ st.markdown("""
     margin: -1rem -1rem 2rem -1rem;
     text-align: center;
 ">
-    <h1 style="margin: 0; font-size: 2.5rem;">📚 NewGrader</h1>
-    <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Professional Grading System for Educators</p>
+    <h1 style="margin: 0; font-size: 2.5rem; color: white;">📚 NewGrader</h1>
+    <p style="margin: 0.5rem 0 0 0; opacity: 0.9; color: white;">Professional Grading System for Educators</p>
 </div>
 """, unsafe_allow_html=True)
 
