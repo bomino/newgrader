@@ -4,34 +4,91 @@ from io import BytesIO
 from modules import database as db
 
 def render():
-    st.title("📊 Gradebook")
+    # Page header
+    st.markdown("""
+    <div style="
+        background-color: #1e3a5f;
+        color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    ">
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Gradebook</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">View grades, statistics, and export reports</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Get all classes
     classes = db.get_all_classes()
     if not classes:
-        st.warning("No classes found. Please create a class first.")
+        st.markdown("""
+        <div style="
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #e2e8f0;
+        ">
+            <h3 style="color: #1e3a5f; margin-bottom: 0.5rem;">No Classes Found</h3>
+            <p style="color: #718096;">Create a class first to view the gradebook.</p>
+        </div>
+        """, unsafe_allow_html=True)
         return
+
+    # Class selector
+    st.markdown("""
+    <div style="
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+    ">
+        <label style="color: #1e3a5f; font-weight: 600; font-size: 0.9rem;">Select Class</label>
+    </div>
+    """, unsafe_allow_html=True)
 
     class_options = {c['name']: c['id'] for c in classes}
     selected_class_name = st.selectbox(
         "Select Class",
         options=list(class_options.keys()),
-        key="gradebook_class_select"
+        key="gradebook_class_select",
+        label_visibility="collapsed"
     )
     selected_class_id = class_options[selected_class_name]
-
-    st.markdown("---")
 
     # Get students and assignments
     students = db.get_students_by_class(selected_class_id)
     assignments = db.get_assignments_by_class(selected_class_id)
 
     if not students:
-        st.warning("No students in this class.")
+        st.markdown("""
+        <div style="
+            text-align: center;
+            padding: 3rem 2rem;
+            background: #fffaf0;
+            border-radius: 8px;
+            border: 1px solid #d69e2e;
+        ">
+            <h3 style="color: #d69e2e; margin-bottom: 0.25rem; font-size: 1rem;">No Students</h3>
+            <p style="color: #d69e2e; font-size: 0.85rem; margin: 0;">Add students to this class first.</p>
+        </div>
+        """, unsafe_allow_html=True)
         return
 
     if not assignments:
-        st.warning("No assignments for this class.")
+        st.markdown("""
+        <div style="
+            text-align: center;
+            padding: 3rem 2rem;
+            background: #fffaf0;
+            border-radius: 8px;
+            border: 1px solid #d69e2e;
+        ">
+            <h3 style="color: #d69e2e; margin-bottom: 0.25rem; font-size: 1rem;">No Assignments</h3>
+            <p style="color: #d69e2e; font-size: 0.85rem; margin: 0;">Create assignments for this class first.</p>
+        </div>
+        """, unsafe_allow_html=True)
         return
 
     # Get grade scale
@@ -87,8 +144,28 @@ def render():
             width="small"
         )
 
-    # Display gradebook
-    st.subheader(f"Grades for {selected_class_name}")
+    # Display gradebook header
+    st.markdown(f"""
+    <div style="
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1rem;
+    ">
+        <h3 style="margin: 0; color: #1e3a5f; font-size: 1rem;">
+            Grades for {selected_class_name}
+            <span style="
+                background: #1e3a5f;
+                color: white;
+                padding: 0.25rem 0.75rem;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                margin-left: 0.5rem;
+            ">{len(students)} students</span>
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Highlight missing assignments
     def highlight_missing(val):
@@ -106,77 +183,180 @@ def render():
         column_config=column_config
     )
 
+    st.markdown("<br>", unsafe_allow_html=True)
+
     # Class statistics
-    st.markdown("---")
-    st.subheader("📈 Class Statistics")
+    st.markdown("""
+    <div style="
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1rem;
+    ">
+        <h3 style="margin: 0; color: #1e3a5f; font-size: 1rem;">Class Statistics</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
     valid_avgs = [row['_avg_value'] for row in gradebook_data if row['_avg_value'] >= 0]
 
     if valid_avgs:
         col1, col2, col3, col4 = st.columns(4)
+
         with col1:
-            st.metric("Class Average", f"{sum(valid_avgs)/len(valid_avgs):.1f}%")
+            class_avg = sum(valid_avgs) / len(valid_avgs)
+            st.markdown(f"""
+            <div style="
+                background: #38a169;
+                color: white;
+                padding: 1.25rem;
+                border-radius: 8px;
+                text-align: center;
+            ">
+                <div style="font-size: 1.75rem; font-weight: 700;">{class_avg:.1f}%</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Class Average</div>
+            </div>
+            """, unsafe_allow_html=True)
+
         with col2:
-            st.metric("Highest", f"{max(valid_avgs):.1f}%")
+            st.markdown(f"""
+            <div style="
+                background: #3182ce;
+                color: white;
+                padding: 1.25rem;
+                border-radius: 8px;
+                text-align: center;
+            ">
+                <div style="font-size: 1.75rem; font-weight: 700;">{max(valid_avgs):.1f}%</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Highest</div>
+            </div>
+            """, unsafe_allow_html=True)
+
         with col3:
-            st.metric("Lowest", f"{min(valid_avgs):.1f}%")
+            st.markdown(f"""
+            <div style="
+                background: #e53e3e;
+                color: white;
+                padding: 1.25rem;
+                border-radius: 8px;
+                text-align: center;
+            ">
+                <div style="font-size: 1.75rem; font-weight: 700;">{min(valid_avgs):.1f}%</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Lowest</div>
+            </div>
+            """, unsafe_allow_html=True)
+
         with col4:
             passing = sum(1 for avg in valid_avgs if avg >= 60)
-            st.metric("Passing", f"{passing}/{len(valid_avgs)}")
+            pass_pct = (passing / len(valid_avgs) * 100) if valid_avgs else 0
+            st.markdown(f"""
+            <div style="
+                background: #d69e2e;
+                color: white;
+                padding: 1.25rem;
+                border-radius: 8px;
+                text-align: center;
+            ">
+                <div style="font-size: 1.75rem; font-weight: 700;">{passing}/{len(valid_avgs)}</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Passing ({pass_pct:.0f}%)</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
 
         # Grade distribution
-        st.subheader("Grade Distribution")
+        st.markdown("""
+        <div style="
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+        ">
+            <h3 style="margin: 0 0 0.5rem 0; color: #1e3a5f; font-size: 1rem;">Grade Distribution</h3>
+        </div>
+        """, unsafe_allow_html=True)
+
         grade_counts = {}
         for avg in valid_avgs:
             letter = get_letter_grade(avg, grade_scale)
             grade_counts[letter] = grade_counts.get(letter, 0) + 1
 
-        dist_df = pd.DataFrame([
-            {"Grade": grade, "Count": count}
-            for grade, count in sorted(grade_counts.items())
-        ])
+        # Create colored grade distribution cards
+        cols = st.columns(5)
+        grade_colors = {
+            'A': '#38a169',
+            'B': '#3182ce',
+            'C': '#d69e2e',
+            'D': '#dd6b20',
+            'F': '#e53e3e',
+        }
 
-        if not dist_df.empty:
-            st.bar_chart(dist_df.set_index('Grade'))
+        for i, grade in enumerate(['A', 'B', 'C', 'D', 'F']):
+            count = grade_counts.get(grade, 0)
+            color = grade_colors[grade]
+            with cols[i]:
+                st.markdown(f"""
+                <div style="
+                    background: {color};
+                    color: white;
+                    padding: 1.25rem;
+                    border-radius: 8px;
+                    text-align: center;
+                ">
+                    <div style="font-size: 1.5rem; font-weight: 700;">{grade}</div>
+                    <div style="font-size: 1.25rem; font-weight: 600;">{count}</div>
+                    <div style="font-size: 0.75rem; opacity: 0.9;">students</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # Export section
-    st.markdown("---")
-    st.subheader("📥 Export")
+    st.markdown("""
+    <div style="
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1rem;
+    ">
+        <h3 style="margin: 0 0 0.5rem 0; color: #1e3a5f; font-size: 1rem;">Export Reports</h3>
+        <p style="color: #718096; font-size: 0.85rem; margin: 0;">Download gradebook data in various formats.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        if st.button("📊 Export to Excel", use_container_width=True):
-            excel_buffer = export_to_excel(display_df, selected_class_name)
-            st.download_button(
-                label="Download Excel",
-                data=excel_buffer,
-                file_name=f"gradebook_{selected_class_name.replace(' ', '_')}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
+        excel_buffer = export_to_excel(display_df, selected_class_name)
+        st.download_button(
+            label="Download Excel",
+            data=excel_buffer,
+            file_name=f"gradebook_{selected_class_name.replace(' ', '_')}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
 
     with col2:
-        if st.button("📄 Export to CSV", use_container_width=True):
-            csv = display_df.to_csv(index=False)
-            st.download_button(
-                label="Download CSV",
-                data=csv,
-                file_name=f"gradebook_{selected_class_name.replace(' ', '_')}.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+        csv = display_df.to_csv(index=False)
+        st.download_button(
+            label="Download CSV",
+            data=csv,
+            file_name=f"gradebook_{selected_class_name.replace(' ', '_')}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
 
     with col3:
-        if st.button("📋 Class Summary", use_container_width=True):
-            summary = generate_class_summary(gradebook_data, assignments, grade_scale, selected_class_name)
-            st.download_button(
-                label="Download Summary",
-                data=summary,
-                file_name=f"summary_{selected_class_name.replace(' ', '_')}.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
+        summary = generate_class_summary(gradebook_data, assignments, grade_scale, selected_class_name)
+        st.download_button(
+            label="Download Summary",
+            data=summary,
+            file_name=f"summary_{selected_class_name.replace(' ', '_')}.txt",
+            mime="text/plain",
+            use_container_width=True
+        )
 
 
 def get_letter_grade(percentage, scale):

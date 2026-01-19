@@ -2,130 +2,289 @@ import streamlit as st
 from modules import database as db
 
 def render():
-    st.title("⚙️ Settings")
+    # Page header
+    st.markdown("""
+    <div style="
+        background-color: #1e3a5f;
+        color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    ">
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Settings</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Configure your grading preferences</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Grade Scale Configuration
-    st.subheader("📊 Grade Scale")
-    st.caption("Configure the percentage thresholds for letter grades.")
+    col1, col2 = st.columns([2, 1])
 
-    current_scale = db.get_grade_scale()
+    with col1:
+        # Grade Scale Configuration
+        st.markdown("""
+        <div style="
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        ">
+            <h3 style="margin: 0 0 0.5rem 0; color: #1e3a5f; font-size: 1rem;">Grade Scale Configuration</h3>
+            <p style="color: #718096; font-size: 0.85rem; margin: 0;">
+                Set the percentage thresholds for each letter grade.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    with st.form("grade_scale_form"):
-        col1, col2 = st.columns(2)
+        current_scale = db.get_grade_scale()
 
-        with col1:
-            a_threshold = st.number_input(
-                "A minimum %",
-                min_value=0,
-                max_value=100,
-                value=current_scale.get('A', 90),
-                step=1,
-                help="Scores at or above this percentage receive an A"
-            )
-            b_threshold = st.number_input(
-                "B minimum %",
-                min_value=0,
-                max_value=100,
-                value=current_scale.get('B', 80),
-                step=1,
-                help="Scores at or above this percentage receive a B"
-            )
-            c_threshold = st.number_input(
-                "C minimum %",
-                min_value=0,
-                max_value=100,
-                value=current_scale.get('C', 70),
-                step=1,
-                help="Scores at or above this percentage receive a C"
-            )
+        with st.form("grade_scale_form"):
+            col_a, col_b, col_c, col_d = st.columns(4)
 
-        with col2:
-            d_threshold = st.number_input(
-                "D minimum %",
-                min_value=0,
-                max_value=100,
-                value=current_scale.get('D', 60),
-                step=1,
-                help="Scores at or above this percentage receive a D"
-            )
-            st.info("Scores below D threshold receive an F")
+            with col_a:
+                st.markdown("""
+                <div style="
+                    background: #38a169;
+                    color: white;
+                    padding: 0.5rem;
+                    border-radius: 6px;
+                    text-align: center;
+                    font-weight: 700;
+                    margin-bottom: 0.5rem;
+                ">A</div>
+                """, unsafe_allow_html=True)
+                a_threshold = st.number_input(
+                    "A min %",
+                    min_value=0,
+                    max_value=100,
+                    value=current_scale.get('A', 90),
+                    step=1,
+                    label_visibility="collapsed"
+                )
 
-        # Validation
-        submitted = st.form_submit_button("💾 Save Grade Scale", use_container_width=True)
+            with col_b:
+                st.markdown("""
+                <div style="
+                    background: #3182ce;
+                    color: white;
+                    padding: 0.5rem;
+                    border-radius: 6px;
+                    text-align: center;
+                    font-weight: 700;
+                    margin-bottom: 0.5rem;
+                ">B</div>
+                """, unsafe_allow_html=True)
+                b_threshold = st.number_input(
+                    "B min %",
+                    min_value=0,
+                    max_value=100,
+                    value=current_scale.get('B', 80),
+                    step=1,
+                    label_visibility="collapsed"
+                )
 
-        if submitted:
-            # Validate thresholds are in descending order
-            if a_threshold > b_threshold > c_threshold > d_threshold:
-                new_scale = {
-                    'A': a_threshold,
-                    'B': b_threshold,
-                    'C': c_threshold,
-                    'D': d_threshold,
-                    'F': 0
-                }
-                db.set_grade_scale(new_scale)
-                st.success("Grade scale saved!")
-            else:
-                st.error("Thresholds must be in descending order: A > B > C > D")
+            with col_c:
+                st.markdown("""
+                <div style="
+                    background: #d69e2e;
+                    color: white;
+                    padding: 0.5rem;
+                    border-radius: 6px;
+                    text-align: center;
+                    font-weight: 700;
+                    margin-bottom: 0.5rem;
+                ">C</div>
+                """, unsafe_allow_html=True)
+                c_threshold = st.number_input(
+                    "C min %",
+                    min_value=0,
+                    max_value=100,
+                    value=current_scale.get('C', 70),
+                    step=1,
+                    label_visibility="collapsed"
+                )
 
-    # Preview grade scale
-    st.markdown("---")
-    st.subheader("Current Grade Scale Preview")
+            with col_d:
+                st.markdown("""
+                <div style="
+                    background: #dd6b20;
+                    color: white;
+                    padding: 0.5rem;
+                    border-radius: 6px;
+                    text-align: center;
+                    font-weight: 700;
+                    margin-bottom: 0.5rem;
+                ">D</div>
+                """, unsafe_allow_html=True)
+                d_threshold = st.number_input(
+                    "D min %",
+                    min_value=0,
+                    max_value=100,
+                    value=current_scale.get('D', 60),
+                    step=1,
+                    label_visibility="collapsed"
+                )
 
-    scale = db.get_grade_scale()
-    preview_data = [
-        f"**A**: {scale.get('A', 90)}% - 100%",
-        f"**B**: {scale.get('B', 80)}% - {scale.get('A', 90) - 1}%",
-        f"**C**: {scale.get('C', 70)}% - {scale.get('B', 80) - 1}%",
-        f"**D**: {scale.get('D', 60)}% - {scale.get('C', 70) - 1}%",
-        f"**F**: 0% - {scale.get('D', 60) - 1}%"
-    ]
+            st.caption("Scores below D threshold receive an F")
 
-    for item in preview_data:
-        st.write(item)
+            submitted = st.form_submit_button("Save Grade Scale", use_container_width=True, type="primary")
 
-    # Database info
-    st.markdown("---")
-    st.subheader("📁 Database Information")
+            if submitted:
+                if a_threshold > b_threshold > c_threshold > d_threshold:
+                    new_scale = {
+                        'A': a_threshold,
+                        'B': b_threshold,
+                        'C': c_threshold,
+                        'D': d_threshold,
+                        'F': 0
+                    }
+                    db.set_grade_scale(new_scale)
+                    st.success("Grade scale saved successfully!")
+                else:
+                    st.error("Thresholds must be in descending order: A > B > C > D")
+
+    with col2:
+        # Grade scale preview
+        scale = db.get_grade_scale()
+
+        st.markdown("""
+        <div style="
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        ">
+            <h4 style="margin: 0 0 1rem 0; color: #1e3a5f; font-size: 1rem;">Current Scale</h4>
+        </div>
+        """, unsafe_allow_html=True)
+
+        grades_info = [
+            ("A", scale.get('A', 90), 100, "#38a169"),
+            ("B", scale.get('B', 80), scale.get('A', 90) - 1, "#3182ce"),
+            ("C", scale.get('C', 70), scale.get('B', 80) - 1, "#d69e2e"),
+            ("D", scale.get('D', 60), scale.get('C', 70) - 1, "#dd6b20"),
+            ("F", 0, scale.get('D', 60) - 1, "#e53e3e"),
+        ]
+
+        for grade, min_val, max_val, color in grades_info:
+            st.markdown(f"""
+            <div style="
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #e2e8f0;
+            ">
+                <span style="
+                    background: {color};
+                    color: white;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 6px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                ">{grade}</span>
+                <span style="color: #2d3748;">{min_val}% - {max_val}%</span>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Database info section
+    st.markdown("""
+    <div style="
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+    ">
+        <h3 style="margin: 0 0 1rem 0; color: #1e3a5f; font-size: 1rem;">Database Information</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
     counts = db.get_total_counts()
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Classes", counts.get("classes", 0))
-    with col2:
-        st.metric("Students", counts.get("students", 0))
-    with col3:
-        st.metric("Assignments", counts.get("assignments", 0))
 
-    st.caption(f"Database location: data/grader.db")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown(f"""
+        <div style="
+            background: #1e3a5f;
+            color: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+        ">
+            <div style="font-size: 2rem; font-weight: 700;">{counts.get('classes', 0)}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9;">Classes</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(f"""
+        <div style="
+            background: #3182ce;
+            color: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+        ">
+            <div style="font-size: 2rem; font-weight: 700;">{counts.get('students', 0)}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9;">Students</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown(f"""
+        <div style="
+            background: #2c5282;
+            color: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+        ">
+            <div style="font-size: 2rem; font-weight: 700;">{counts.get('assignments', 0)}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9;">Assignments</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.caption("Database location: `data/grader.db`")
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # Reset section
-    st.markdown("---")
-    st.subheader("🔄 Reset Options")
+    st.markdown("""
+    <div style="
+        background: #fff5f5;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #fed7d7;
+    ">
+        <h3 style="margin: 0 0 0.5rem 0; color: #c53030; font-size: 1rem;">Reset Options</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.warning("These actions cannot be undone!")
+    if st.button("Reset Grade Scale to Default", use_container_width=False):
+        default_scale = {"A": 90, "B": 80, "C": 70, "D": 60, "F": 0}
+        db.set_grade_scale(default_scale)
+        st.success("Grade scale reset to default values!")
+        st.rerun()
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Reset Grade Scale to Default", use_container_width=True):
-            default_scale = {"A": 90, "B": 80, "C": 70, "D": 60, "F": 0}
-            db.set_grade_scale(default_scale)
-            st.success("Grade scale reset to default!")
-            st.rerun()
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # About section
-    st.markdown("---")
-    st.subheader("ℹ️ About NewGrader")
-
     st.markdown("""
-    **NewGrader** is a teacher grading application that helps you:
-
-    - Manage classes and students
-    - Create and track assignments
-    - Enter grades manually or use auto-grading
-    - View comprehensive gradebook with statistics
-    - Export reports to Excel/CSV
-
-    Built with Streamlit and SQLite.
-    """)
+    <div style="
+        background-color: #1e3a5f;
+        color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+    ">
+        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">NewGrader</h3>
+        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Professional Grading Application</p>
+        <p style="margin: 1rem 0 0 0; font-size: 0.8rem; opacity: 0.7;">Built with Streamlit & SQLite</p>
+    </div>
+    """, unsafe_allow_html=True)

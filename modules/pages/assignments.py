@@ -4,28 +4,74 @@ from datetime import date
 from modules import database as db
 
 def render():
-    st.title("📝 Assignment Management")
+    # Page header
+    st.markdown("""
+    <div style="
+        background-color: #1e3a5f;
+        color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    ">
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Assignment Management</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Create and manage assignments for your classes</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Get all classes
     classes = db.get_all_classes()
 
     if not classes:
-        st.warning("No classes found. Please create a class first.")
+        st.markdown("""
+        <div style="
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #e2e8f0;
+        ">
+            <h3 style="color: #1e3a5f; margin-bottom: 0.5rem;">No Classes Found</h3>
+            <p style="color: #718096;">Create a class first to add assignments.</p>
+        </div>
+        """, unsafe_allow_html=True)
         return
 
     # Class selector
+    st.markdown("""
+    <div style="
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+    ">
+        <label style="color: #1e3a5f; font-weight: 600; font-size: 0.9rem;">Select Class</label>
+    </div>
+    """, unsafe_allow_html=True)
+
     class_options = {c['name']: c['id'] for c in classes}
     selected_class_name = st.selectbox(
         "Select Class",
         options=list(class_options.keys()),
-        key="assignment_class_select"
+        key="assignment_class_select",
+        label_visibility="collapsed"
     )
     selected_class_id = class_options[selected_class_name]
 
-    st.markdown("---")
+    # Add new assignment
+    st.markdown("""
+    <div style="
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1rem;
+    ">
+        <h3 style="margin: 0 0 0.5rem 0; color: #1e3a5f; font-size: 1rem;">Add New Assignment</h3>
+        <p style="color: #718096; font-size: 0.85rem; margin: 0;">Create a new assignment with points and weight.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Add new assignment form
-    with st.expander("➕ Add New Assignment", expanded=False):
+    with st.expander("Create Assignment", expanded=False):
         with st.form("add_assignment_form", clear_on_submit=True):
             col1, col2 = st.columns(2)
 
@@ -57,7 +103,7 @@ def render():
                     min_value=date(2020, 1, 1)
                 )
 
-            submitted = st.form_submit_button("Add Assignment", use_container_width=True)
+            submitted = st.form_submit_button("Add Assignment", use_container_width=True, type="primary")
 
             if submitted:
                 if assignment_name.strip():
@@ -74,50 +120,79 @@ def render():
                 else:
                     st.warning("Please enter an assignment name.")
 
-    st.markdown("---")
-
-    # Display assignments for selected class
+    # Display assignments
     assignments = db.get_assignments_by_class(selected_class_id)
 
     if assignments:
-        st.subheader(f"Assignments for {selected_class_name} ({len(assignments)})")
+        st.markdown(f"""
+        <div style="
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin: 1rem 0;
+        ">
+            <h3 style="margin: 0; color: #1e3a5f; font-size: 1rem;">
+                Assignments for {selected_class_name}
+                <span style="
+                    background: #1e3a5f;
+                    color: white;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 4px;
+                    font-size: 0.8rem;
+                    margin-left: 0.5rem;
+                ">{len(assignments)}</span>
+            </h3>
+        </div>
+        """, unsafe_allow_html=True)
 
-        # Create dataframe for display
-        data = []
-        for a in assignments:
-            data.append({
-                "ID": a['id'],
-                "Name": a['name'],
-                "Max Points": a['max_points'],
-                "Weight": a['weight'],
-                "Due Date": a['due_date'] if a['due_date'] else "-",
-            })
+        # Assignment cards
+        cols = st.columns(3)
+        for i, a in enumerate(assignments):
+            due_text = a['due_date'] if a['due_date'] else "No due date"
 
-        df = pd.DataFrame(data)
-
-        st.dataframe(
-            df,
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "ID": st.column_config.NumberColumn("ID", width="small"),
-                "Name": st.column_config.TextColumn("Name", width="large"),
-                "Max Points": st.column_config.NumberColumn("Max Points", width="small"),
-                "Weight": st.column_config.NumberColumn("Weight", width="small"),
-                "Due Date": st.column_config.TextColumn("Due Date", width="medium"),
-            }
-        )
+            with cols[i % 3]:
+                st.markdown(f"""
+                <div style="
+                    background-color: #1e3a5f;
+                    color: white;
+                    padding: 1.25rem;
+                    border-radius: 8px;
+                    margin-bottom: 1rem;
+                ">
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600;">{a['name']}</h4>
+                    <div style="font-size: 0.85rem; opacity: 0.9;">
+                        {a['max_points']} pts | Weight: {a['weight']}
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.7;">
+                        Due: {due_text}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
         st.markdown("---")
 
         # Edit assignment section
-        st.subheader("✏️ Edit Assignment")
-        assignment_options = {f"{a['name']} (ID: {a['id']})": a['id'] for a in assignments}
+        st.markdown("""
+        <div style="
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+        ">
+            <h3 style="margin: 0 0 0.5rem 0; color: #1e3a5f; font-size: 1rem;">Edit Assignment</h3>
+            <p style="color: #718096; font-size: 0.85rem; margin: 0;">Modify or delete an existing assignment.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        assignment_options = {f"{a['name']} ({a['max_points']} pts)": a['id'] for a in assignments}
 
         selected_assignment_key = st.selectbox(
             "Select assignment to edit",
             options=list(assignment_options.keys()),
-            key="edit_assignment_select"
+            key="edit_assignment_select",
+            label_visibility="collapsed"
         )
         selected_assignment_id = assignment_options[selected_assignment_key]
         selected_assignment = db.get_assignment_by_id(selected_assignment_id)
@@ -161,9 +236,9 @@ def render():
 
                 col1, col2 = st.columns(2)
                 with col1:
-                    update_btn = st.form_submit_button("💾 Save Changes", use_container_width=True)
+                    update_btn = st.form_submit_button("Save Changes", use_container_width=True, type="primary")
                 with col2:
-                    delete_btn = st.form_submit_button("🗑️ Delete Assignment", use_container_width=True)
+                    delete_btn = st.form_submit_button("Delete Assignment", use_container_width=True)
 
                 if update_btn:
                     due_date_str = edit_due_date.isoformat() if edit_due_date else None
@@ -180,9 +255,8 @@ def render():
                 if delete_btn:
                     st.session_state['confirm_delete_assignment'] = selected_assignment_id
 
-        # Confirmation dialog for delete
         if st.session_state.get('confirm_delete_assignment'):
-            st.error("⚠️ Are you sure you want to delete this assignment? This will also delete all associated grades.")
+            st.error("Are you sure you want to delete this assignment? This will also delete all associated grades.")
             col1, col2, col3 = st.columns([1, 1, 2])
             with col1:
                 if st.button("Yes, Delete", type="primary"):
@@ -195,4 +269,16 @@ def render():
                     st.session_state.pop('confirm_delete_assignment', None)
                     st.rerun()
     else:
-        st.info(f"No assignments for {selected_class_name} yet. Add one above!")
+        st.markdown(f"""
+        <div style="
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #e2e8f0;
+            margin-top: 1rem;
+        ">
+            <h3 style="color: #1e3a5f; margin-bottom: 0.5rem;">No Assignments Yet</h3>
+            <p style="color: #718096;">Create your first assignment for {selected_class_name}!</p>
+        </div>
+        """, unsafe_allow_html=True)
