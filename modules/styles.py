@@ -24,26 +24,26 @@ COLORS = {
 def apply_custom_css():
     """Apply custom CSS styling to the entire app."""
 
-    # Add a floating menu button that's always visible
+    # Add a floating menu button - only visible when sidebar is collapsed
     st.markdown("""
     <div id="floating-menu-btn" onclick="openSidebar()" style="
         position: fixed;
-        left: 10px;
-        top: 80px;
-        width: 50px;
-        height: 50px;
+        left: 8px;
+        top: 14px;
+        width: 40px;
+        height: 40px;
         background-color: #1e3a5f;
-        border: 3px solid #3182ce;
-        border-radius: 10px;
+        border: 2px solid #3182ce;
+        border-radius: 8px;
         cursor: pointer;
         z-index: 999999;
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         transition: all 0.3s ease;
     ">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -52,51 +52,91 @@ def apply_custom_css():
 
     <script>
     function openSidebar() {
-        // Try multiple methods to open the sidebar
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        const collapseBtn = document.querySelector('[data-testid="collapsedControl"]');
-        const expandBtn = document.querySelector('button[kind="header"]');
+        console.log('Opening sidebar...');
 
-        if (collapseBtn) {
-            collapseBtn.click();
-        } else if (expandBtn) {
-            expandBtn.click();
-        } else if (sidebar) {
-            sidebar.setAttribute('aria-expanded', 'true');
-            sidebar.style.display = 'block';
-            sidebar.style.width = '336px';
-            sidebar.style.transform = 'translateX(0)';
+        // Method 1: Find and click the collapsed control button
+        const collapsedControl = document.querySelector('[data-testid="collapsedControl"]');
+        if (collapsedControl) {
+            console.log('Found collapsedControl');
+            const btn = collapsedControl.querySelector('button') || collapsedControl;
+            btn.click();
+            return;
         }
 
-        // Also try to find any button that might expand sidebar
-        const buttons = document.querySelectorAll('button');
-        buttons.forEach(btn => {
-            if (btn.getAttribute('aria-label')?.includes('expand') ||
-                btn.getAttribute('aria-label')?.includes('sidebar') ||
-                btn.getAttribute('title')?.includes('sidebar')) {
+        // Method 2: Find button with specific test id
+        const baseButton = document.querySelector('[data-testid="baseButton-header"]');
+        if (baseButton) {
+            console.log('Found baseButton-header');
+            baseButton.click();
+            return;
+        }
+
+        // Method 3: Find the expand icon button
+        const allButtons = document.querySelectorAll('button');
+        for (let btn of allButtons) {
+            const svg = btn.querySelector('svg');
+            const ariaLabel = btn.getAttribute('aria-label') || '';
+            const title = btn.getAttribute('title') || '';
+
+            if (ariaLabel.toLowerCase().includes('expand') ||
+                title.toLowerCase().includes('expand') ||
+                ariaLabel.toLowerCase().includes('open') ||
+                title.toLowerCase().includes('open')) {
+                console.log('Found expand button via aria-label/title');
                 btn.click();
+                return;
             }
-        });
+        }
+
+        // Method 4: Directly manipulate sidebar CSS
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        const sidebarContent = document.querySelector('[data-testid="stSidebarContent"]');
+
+        if (sidebar) {
+            console.log('Forcing sidebar open via CSS');
+            sidebar.style.width = '336px';
+            sidebar.style.minWidth = '336px';
+            sidebar.style.transform = 'none';
+            sidebar.style.marginLeft = '0';
+            sidebar.setAttribute('aria-expanded', 'true');
+
+            // Also try to find parent container
+            const sidebarNav = sidebar.closest('[data-testid="stSidebarNav"]') ||
+                              sidebar.parentElement;
+            if (sidebarNav) {
+                sidebarNav.style.width = '336px';
+                sidebarNav.style.transform = 'none';
+            }
+        }
+
+        // Method 5: Trigger resize event (sometimes helps Streamlit recalculate)
+        window.dispatchEvent(new Event('resize'));
     }
 
-    // Hide the floating button when sidebar is open
+    // Check sidebar state and show/hide hamburger button
     function checkSidebarState() {
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         const floatingBtn = document.getElementById('floating-menu-btn');
 
-        if (sidebar && floatingBtn) {
-            const isExpanded = sidebar.getAttribute('aria-expanded') === 'true' ||
-                              sidebar.offsetWidth > 100;
-            floatingBtn.style.display = isExpanded ? 'none' : 'flex';
+        if (!floatingBtn) return;
+
+        if (sidebar) {
+            const rect = sidebar.getBoundingClientRect();
+            const isVisible = rect.width > 50 && rect.left >= -10;
+            floatingBtn.style.display = isVisible ? 'none' : 'flex';
+        } else {
+            // No sidebar found, show the button
+            floatingBtn.style.display = 'flex';
         }
     }
 
     // Check sidebar state periodically
-    setInterval(checkSidebarState, 500);
+    setInterval(checkSidebarState, 300);
 
-    // Also check on page load
-    document.addEventListener('DOMContentLoaded', checkSidebarState);
+    // Initial checks
+    setTimeout(checkSidebarState, 500);
     setTimeout(checkSidebarState, 1000);
+    setTimeout(checkSidebarState, 2000);
     </script>
     """, unsafe_allow_html=True)
 
