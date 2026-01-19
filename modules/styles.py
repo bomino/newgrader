@@ -51,29 +51,48 @@ def apply_custom_css():
 
     <script>
     function toggleSidebar() {
-        // Try to find and click Streamlit's native button
-        const selectors = [
-            '[data-testid="collapsedControl"]',
-            '[data-testid="stSidebarCollapsedControl"]',
-            'button[aria-label="Expand sidebar"]',
-            'button[aria-label="Open sidebar"]'
-        ];
-
-        for (const selector of selectors) {
-            const btn = document.querySelector(selector);
-            if (btn) {
-                btn.click();
-                return;
-            }
-        }
-
-        // Fallback: Try to manipulate sidebar directly
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            sidebar.setAttribute('aria-expanded', 'true');
-            sidebar.style.marginLeft = '0';
-            sidebar.style.left = '0';
+        if (!sidebar) return;
+
+        // Force sidebar to be visible
+        sidebar.setAttribute('aria-expanded', 'true');
+
+        // Find the inner content section
+        const sidebarContent = sidebar.querySelector('[data-testid="stSidebarContent"]') ||
+                               sidebar.querySelector('section') ||
+                               sidebar.firstElementChild;
+
+        // Reset all transforms and positions
+        sidebar.style.cssText += `
+            transform: none !important;
+            left: 0 !important;
+            margin-left: 0 !important;
+            width: 21rem !important;
+            min-width: 21rem !important;
+            visibility: visible !important;
+            display: flex !important;
+        `;
+
+        if (sidebarContent) {
+            sidebarContent.style.cssText += `
+                transform: none !important;
+                left: 0 !important;
+                visibility: visible !important;
+            `;
         }
+
+        // Also try parent elements
+        let parent = sidebar.parentElement;
+        while (parent && parent !== document.body) {
+            if (parent.style.transform || window.getComputedStyle(parent).transform !== 'none') {
+                parent.style.transform = 'none';
+            }
+            parent = parent.parentElement;
+        }
+
+        // Hide our custom button
+        const customBtn = document.getElementById('customSidebarToggle');
+        if (customBtn) customBtn.style.display = 'none';
     }
 
     // Monitor sidebar state and show/hide custom button
