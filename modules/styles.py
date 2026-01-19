@@ -23,8 +23,95 @@ COLORS = {
 
 def apply_custom_css():
     """Apply custom CSS styling to the entire app."""
+
+    # Add a floating menu button that's always visible
+    st.markdown("""
+    <div id="floating-menu-btn" onclick="openSidebar()" style="
+        position: fixed;
+        left: 10px;
+        top: 80px;
+        width: 50px;
+        height: 50px;
+        background-color: #1e3a5f;
+        border: 3px solid #3182ce;
+        border-radius: 10px;
+        cursor: pointer;
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+    ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </div>
+
+    <script>
+    function openSidebar() {
+        // Try multiple methods to open the sidebar
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        const collapseBtn = document.querySelector('[data-testid="collapsedControl"]');
+        const expandBtn = document.querySelector('button[kind="header"]');
+
+        if (collapseBtn) {
+            collapseBtn.click();
+        } else if (expandBtn) {
+            expandBtn.click();
+        } else if (sidebar) {
+            sidebar.setAttribute('aria-expanded', 'true');
+            sidebar.style.display = 'block';
+            sidebar.style.width = '336px';
+            sidebar.style.transform = 'translateX(0)';
+        }
+
+        // Also try to find any button that might expand sidebar
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+            if (btn.getAttribute('aria-label')?.includes('expand') ||
+                btn.getAttribute('aria-label')?.includes('sidebar') ||
+                btn.getAttribute('title')?.includes('sidebar')) {
+                btn.click();
+            }
+        });
+    }
+
+    // Hide the floating button when sidebar is open
+    function checkSidebarState() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        const floatingBtn = document.getElementById('floating-menu-btn');
+
+        if (sidebar && floatingBtn) {
+            const isExpanded = sidebar.getAttribute('aria-expanded') === 'true' ||
+                              sidebar.offsetWidth > 100;
+            floatingBtn.style.display = isExpanded ? 'none' : 'flex';
+        }
+    }
+
+    // Check sidebar state periodically
+    setInterval(checkSidebarState, 500);
+
+    // Also check on page load
+    document.addEventListener('DOMContentLoaded', checkSidebarState);
+    setTimeout(checkSidebarState, 1000);
+    </script>
+    """, unsafe_allow_html=True)
+
     st.markdown("""
     <style>
+    /* ============================================
+       FLOATING MENU BUTTON
+       ============================================ */
+
+    #floating-menu-btn:hover {
+        background-color: #3182ce !important;
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
+    }
+
     /* ============================================
        GLOBAL STYLES
        ============================================ */
