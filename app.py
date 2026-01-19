@@ -1,6 +1,6 @@
 import streamlit as st
 from modules import database as db
-from modules.pages import classes
+from modules.pages import classes, students
 
 st.set_page_config(
     page_title="NewGrader",
@@ -61,6 +61,9 @@ def main():
 
     elif selection == "Classes":
         classes.render()
+
+    elif selection == "Students":
+        students.render()
 
     else:
         st.title(selection)
