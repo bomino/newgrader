@@ -1,10 +1,10 @@
-# NewGrader - Teacher Grading Application
+# NewGrader - Technical Documentation
 
 ## Project Overview
 
 A Streamlit-based grading application for teachers to manage students, assignments, and grades with auto-grading capabilities.
 
-**Documentation:** See `docs/USER_GUIDE.md` for comprehensive user documentation.
+**Repository:** https://github.com/bomino/newgrader
 
 ## Tech Stack
 
@@ -13,25 +13,26 @@ A Streamlit-based grading application for teachers to manage students, assignmen
 - **SQLite** - Embedded database
 - **Pandas** - Data manipulation and display
 - **openpyxl** - Excel file generation
+- **Playwright** - UI testing
 
 ## Project Structure
 
 ```
 NewGrader/
-├── app.py                    # Main entry point, routing
+├── app.py                    # Main entry point, routing, home dashboard
 ├── requirements.txt          # Python dependencies
-├── CLAUDE.md                 # Technical documentation (this file)
+├── pytest.ini               # Pytest configuration
+├── README.md                # User documentation
+├── CLAUDE.md                # Technical documentation (this file)
 ├── .gitignore               # Git ignore rules
 │
 ├── data/
 │   └── grader.db            # SQLite database (auto-created)
 │
-├── docs/
-│   └── USER_GUIDE.md        # User documentation
-│
 ├── modules/
 │   ├── __init__.py
 │   ├── database.py          # All database operations
+│   ├── styles.py            # CSS theming (Navy Blue & White)
 │   └── pages/
 │       ├── __init__.py
 │       ├── classes.py       # Class management UI
@@ -42,13 +43,13 @@ NewGrader/
 │       ├── gradebook.py     # Gradebook view & exports
 │       └── settings.py      # Grade scale configuration
 │
-├── venv/                    # Virtual environment (not in git)
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py          # Pytest fixtures
+│   ├── test_sidebar.py      # Sidebar visibility tests
+│   └── screenshots/         # Test screenshots
 │
-└── scripts/ralph/           # Ralph autonomous agent files
-    ├── prd.json
-    ├── prompt-claude.md
-    ├── ralph-claude.ps1
-    └── ralph-claude.sh
+└── venv/                    # Virtual environment (not in git)
 ```
 
 ## Development Commands
@@ -63,6 +64,9 @@ python -m venv venv
 # Activate (cmd)
 venv\Scripts\activate.bat
 
+# Activate (macOS/Linux)
+source venv/bin/activate
+
 # Install dependencies
 pip install -r requirements.txt
 
@@ -71,7 +75,50 @@ streamlit run app.py
 
 # Run on specific port
 streamlit run app.py --server.port 8080
+
+# Run tests (start app first on port 8502)
+streamlit run app.py --server.port 8502 --server.headless true &
+pytest tests/ -v
 ```
+
+## UI Theming
+
+### Color Palette
+
+The application uses a professional Navy Blue & White theme defined in `modules/styles.py`:
+
+```python
+COLORS = {
+    "primary": "#1e3a5f",        # Navy Blue
+    "primary_dark": "#0f2744",   # Dark Navy
+    "primary_light": "#2c5282",  # Light Navy
+    "secondary": "#3182ce",      # Accent Blue
+    "white": "#ffffff",
+    "light_gray": "#f7fafc",     # Light Gray (backgrounds)
+    "gray": "#718096",           # Medium Gray
+    "dark_gray": "#2d3748",      # Dark Gray (text)
+    "border": "#e2e8f0",         # Border Gray
+    "success": "#38a169",        # Green
+    "warning": "#d69e2e",        # Amber/Gold
+    "danger": "#e53e3e",         # Red
+}
+```
+
+### Styling Module
+
+`modules/styles.py` provides:
+- `apply_custom_css()` - Applies global CSS styles
+- `get_page_header_style()` - Standard page header styling
+- `get_card_style()` - Standard card styling
+- `get_stat_card_style(variant)` - Stat card styling by variant
+
+### CSS Features
+
+- Navy Blue sidebar with white text
+- Prominent expand/collapse button (32x48px)
+- Consistent page headers
+- Styled form inputs and buttons
+- Responsive design
 
 ## Database Schema
 
@@ -162,8 +209,21 @@ import streamlit as st
 from modules import database as db
 
 def render():
-    st.title("Page Title")
-    # Page logic here
+    # Page header with Navy Blue styling
+    st.markdown("""
+    <div style="
+        background-color: #1e3a5f;
+        color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    ">
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Page Title</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9;">Page description</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Page content here
 ```
 
 ### Database Module
@@ -183,10 +243,11 @@ update_*(id, ...)    # Update existing record
 delete_*(id)         # Delete record
 
 # Special operations
-bulk_add_students()  # Bulk insert
-bulk_set_grades()    # Upsert grades
+bulk_add_students()  # Bulk insert from CSV
+bulk_set_grades()    # Upsert multiple grades
 get_grade_scale()    # Get JSON settings
 set_grade_scale()    # Save JSON settings
+get_total_counts()   # Dashboard statistics
 ```
 
 ### State Management
@@ -196,27 +257,45 @@ Use `st.session_state` for:
 - Grading results (`st.session_state['grading_results']`)
 - Cross-page navigation hints
 
-## Conventions
+## Testing
 
-### Code Style
+### Test Setup
 
-- Use `st.session_state` for maintaining state between reruns
-- All database operations go through `modules/database.py`
-- Pages use Streamlit's native components (`st.dataframe`, `st.form`, etc.)
-- Error handling: use `st.error()` and `st.success()` for user feedback
+Tests use Playwright for browser automation:
 
-### UI Patterns
+```bash
+# Install test dependencies
+pip install pytest pytest-playwright playwright
+playwright install chromium
 
-- Use `st.form()` for data entry to prevent rerun on each input
-- Use `st.expander()` for collapsible sections
-- Use `st.columns()` for side-by-side layouts
-- Use `st.data_editor()` for editable tables
+# Run tests
+pytest tests/ -v -s
+```
 
-### Database Patterns
+### Test Structure
 
-- Always use context manager: `with get_connection() as conn:`
-- Return `dict(row)` for single records, `[dict(row) for row in rows]` for lists
-- Use `ON CONFLICT ... DO UPDATE` for upserts
+```python
+# tests/test_sidebar.py
+class TestSidebarVisibility:
+    def test_sidebar_expanded_by_default(self, page: Page):
+        """Test that sidebar is visible on load."""
+
+    def test_sidebar_has_navy_background(self, page: Page):
+        """Test Navy Blue background color."""
+
+    def test_expand_button_styling_when_collapsed(self, page: Page):
+        """Test expand button has proper styling."""
+```
+
+### Running Tests
+
+```bash
+# Terminal 1: Start Streamlit
+streamlit run app.py --server.port 8502 --server.headless true
+
+# Terminal 2: Run tests
+pytest tests/test_sidebar.py -v
+```
 
 ## Key Algorithms
 
@@ -274,6 +353,7 @@ def get_letter_grade(percentage, scale):
 1. Create `modules/pages/newpage.py` with a `render()` function
 2. Import in `app.py`: `from modules.pages import newpage`
 3. Add to `PAGES` dict and routing `elif` block
+4. Follow the Navy Blue header pattern for consistency
 
 ### Adding a New Database Table
 
@@ -286,15 +366,36 @@ def get_letter_grade(percentage, scale):
 1. Use `get_setting(key, default)` and `set_setting(key, value)`
 2. Settings are stored as strings; use JSON for complex values
 
-## Testing Manually
+### Adding New Tests
 
-1. Create a class: "Test Class"
-2. Add 3-5 students
-3. Create an assignment: "Quiz 1", 10 points
-4. Create answer key: 5 questions, A/B/C/D/A
-5. Upload test CSV with responses
-6. Verify grades appear in gradebook
-7. Export to Excel and verify file
+1. Create test file in `tests/` directory
+2. Use `page: Page` fixture from pytest-playwright
+3. Target elements using `[data-testid="..."]` selectors
+4. Save screenshots to `tests/screenshots/`
+
+## Conventions
+
+### Code Style
+
+- Use `st.session_state` for maintaining state between reruns
+- All database operations go through `modules/database.py`
+- Pages use Streamlit's native components (`st.dataframe`, `st.form`, etc.)
+- Error handling: use `st.error()` and `st.success()` for user feedback
+- Follow Navy Blue & White color scheme for custom HTML
+
+### UI Patterns
+
+- Use `st.form()` for data entry to prevent rerun on each input
+- Use `st.expander()` for collapsible sections
+- Use `st.columns()` for side-by-side layouts
+- Use `st.data_editor()` for editable tables
+- Page headers: Navy Blue background, white text, 8px border-radius
+
+### Database Patterns
+
+- Always use context manager: `with get_connection() as conn:`
+- Return `dict(row)` for single records, `[dict(row) for row in rows]` for lists
+- Use `ON CONFLICT ... DO UPDATE` for upserts
 
 ## Known Limitations
 
@@ -302,3 +403,19 @@ def get_letter_grade(percentage, scale):
 - SQLite limits concurrent writes
 - Large file uploads may be slow
 - No undo functionality (use exports for backup)
+
+## Troubleshooting
+
+### Sidebar Not Visible
+- Check browser console for CSS errors
+- Hard refresh (Ctrl+Shift+R) to clear cache
+- Verify `styles.apply_custom_css()` is called in `app.py`
+
+### Database Errors
+- Delete `data/grader.db` to recreate schema
+- Check file permissions on `data/` directory
+
+### Test Failures
+- Ensure Streamlit is running on port 8502
+- Wait for app to fully load (tests have 3s timeout)
+- Check `tests/screenshots/` for visual debugging
