@@ -1,0 +1,176 @@
+{
+  "project": "NewGrader",
+  "branchName": "ralph/initial-build",
+  "description": "Teacher grading application with student management, assignment grading, auto-grading from answer keys, grade calculations, and report export",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Project setup and basic Streamlit app",
+      "description": "As a developer, I need the basic project structure so I can build the application.",
+      "acceptanceCriteria": [
+        "Create requirements.txt with streamlit, pandas, openpyxl dependencies",
+        "Create app.py with basic Streamlit multipage app structure",
+        "Create CLAUDE.md with project conventions",
+        "App runs with 'streamlit run app.py'"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "SQLite database setup for students and classes",
+      "description": "As a teacher, I need persistent storage for my students and classes.",
+      "acceptanceCriteria": [
+        "Create database module with SQLite connection",
+        "Create tables: classes (id, name), students (id, name, class_id)",
+        "Include helper functions for CRUD operations",
+        "Database file stored in data/grader.db"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Class management page",
+      "description": "As a teacher, I want to create and manage my classes.",
+      "acceptanceCriteria": [
+        "Page to view all classes in a table",
+        "Form to add new class",
+        "Button to delete class (with confirmation)",
+        "Classes persist in database"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Student roster management",
+      "description": "As a teacher, I want to add and manage students in each class.",
+      "acceptanceCriteria": [
+        "Select class from dropdown to view students",
+        "Table showing all students in selected class",
+        "Form to add new student to class",
+        "Edit and delete student functionality",
+        "Bulk import students from CSV"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Assignment database schema",
+      "description": "As a teacher, I need to store assignments and grades.",
+      "acceptanceCriteria": [
+        "Create assignments table (id, name, class_id, max_points, weight, due_date)",
+        "Create grades table (id, student_id, assignment_id, points, comments)",
+        "Create answer_keys table (id, assignment_id, question_num, correct_answer, points)",
+        "Helper functions for assignment CRUD"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Assignment management page",
+      "description": "As a teacher, I want to create assignments for my classes.",
+      "acceptanceCriteria": [
+        "Select class to view/create assignments",
+        "Form to create assignment (name, max points, weight, due date)",
+        "List of assignments for selected class",
+        "Edit and delete assignment functionality"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Manual grade entry",
+      "description": "As a teacher, I want to manually enter grades for assignments.",
+      "acceptanceCriteria": [
+        "Select class and assignment",
+        "Show all students with input fields for points and comments",
+        "Save grades to database",
+        "Show existing grades when editing"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Answer key creation",
+      "description": "As a teacher, I want to create answer keys for auto-grading.",
+      "acceptanceCriteria": [
+        "Select assignment to create/edit answer key",
+        "Add questions with correct answers and point values",
+        "Support multiple choice (A,B,C,D) and short text answers",
+        "Save answer key to database"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Auto-grading from student responses",
+      "description": "As a teacher, I want to auto-grade assignments using my answer key.",
+      "acceptanceCriteria": [
+        "Upload CSV/Excel with student responses (columns: student_name, q1, q2, ...)",
+        "Match responses against answer key",
+        "Calculate scores automatically",
+        "Show grading results with breakdown per question",
+        "Option to save grades to database"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Grade calculations and gradebook view",
+      "description": "As a teacher, I want to see calculated grades for all students.",
+      "acceptanceCriteria": [
+        "Gradebook page showing all students and their grades",
+        "Calculate weighted average based on assignment weights",
+        "Show letter grade (A/B/C/D/F) based on configurable scale",
+        "Highlight missing assignments"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Grade scale configuration",
+      "description": "As a teacher, I want to configure my grading scale.",
+      "acceptanceCriteria": [
+        "Settings page for grade scale (A >= 90, B >= 80, etc.)",
+        "Save scale to database",
+        "Use configured scale in grade calculations"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Export reports to CSV/Excel",
+      "description": "As a teacher, I want to export grades for record keeping.",
+      "acceptanceCriteria": [
+        "Export gradebook to Excel with all students and assignments",
+        "Export individual student report",
+        "Export class summary with statistics",
+        "Download button for each export"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
