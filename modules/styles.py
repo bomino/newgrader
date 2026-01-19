@@ -38,7 +38,7 @@ def apply_custom_css():
         border-radius: 0 10px 10px 0;
         cursor: pointer;
         z-index: 999999;
-        display: none;
+        display: flex;
         align-items: center;
         justify-content: center;
         box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.4);
@@ -82,18 +82,21 @@ def apply_custom_css():
         const customBtn = document.getElementById('customSidebarToggle');
 
         if (!customBtn) return;
+
+        // If no sidebar found, keep button visible
         if (!sidebar) {
             customBtn.style.display = 'flex';
             return;
         }
 
-        // Check if sidebar is collapsed using aria-expanded OR position
+        // Check if sidebar is EXPANDED (visible)
         const ariaExpanded = sidebar.getAttribute('aria-expanded');
         const sidebarLeft = sidebar.getBoundingClientRect().left;
 
-        const isCollapsed = ariaExpanded === 'false' || sidebarLeft < -50;
+        // Hide button when sidebar is open (expanded), show when collapsed
+        const isExpanded = ariaExpanded === 'true' && sidebarLeft >= 0;
 
-        customBtn.style.display = isCollapsed ? 'flex' : 'none';
+        customBtn.style.display = isExpanded ? 'none' : 'flex';
     }
 
     // Run check periodically
