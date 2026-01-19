@@ -56,8 +56,7 @@ def apply_custom_css():
             '[data-testid="collapsedControl"]',
             '[data-testid="stSidebarCollapsedControl"]',
             'button[aria-label="Expand sidebar"]',
-            'button[aria-label="Open sidebar"]',
-            '[data-testid="stSidebar"] button[kind="header"]'
+            'button[aria-label="Open sidebar"]'
         ];
 
         for (const selector of selectors) {
@@ -72,8 +71,8 @@ def apply_custom_css():
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         if (sidebar) {
             sidebar.setAttribute('aria-expanded', 'true');
-            sidebar.style.transform = 'translateX(0)';
-            sidebar.style.width = '21rem';
+            sidebar.style.marginLeft = '0';
+            sidebar.style.left = '0';
         }
     }
 
@@ -82,23 +81,28 @@ def apply_custom_css():
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         const customBtn = document.getElementById('customSidebarToggle');
 
-        if (!sidebar || !customBtn) {
-            setTimeout(checkSidebarState, 500);
+        if (!customBtn) return;
+        if (!sidebar) {
+            customBtn.style.display = 'flex';
             return;
         }
 
-        const isCollapsed = sidebar.getAttribute('aria-expanded') === 'false' ||
-                           sidebar.style.transform.includes('-') ||
-                           window.getComputedStyle(sidebar).transform.includes('-');
+        // Check if sidebar is collapsed using aria-expanded OR position
+        const ariaExpanded = sidebar.getAttribute('aria-expanded');
+        const sidebarLeft = sidebar.getBoundingClientRect().left;
+
+        const isCollapsed = ariaExpanded === 'false' || sidebarLeft < -50;
 
         customBtn.style.display = isCollapsed ? 'flex' : 'none';
     }
 
     // Run check periodically
-    setInterval(checkSidebarState, 300);
+    setInterval(checkSidebarState, 200);
 
-    // Initial check after page load
+    // Multiple initial checks to catch the state
+    setTimeout(checkSidebarState, 500);
     setTimeout(checkSidebarState, 1000);
+    setTimeout(checkSidebarState, 2000);
     </script>
     """, unsafe_allow_html=True)
 
