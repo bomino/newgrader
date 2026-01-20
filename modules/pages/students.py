@@ -12,8 +12,8 @@ def render():
         border-radius: 8px;
         margin-bottom: 2rem;
     ">
-        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Student Roster</h1>
-        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Manage students in your classes</p>
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: white;">Student Roster</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem; color: white;">Manage students in your classes</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -75,18 +75,26 @@ def render():
 
         with st.form("add_student_form", clear_on_submit=True):
             student_name = st.text_input("Student Name", placeholder="e.g., John Smith")
+            student_id = st.text_input("Student ID (optional)", placeholder="e.g., 12345678", help="Unique identifier like university student number")
             student_email = st.text_input("Email (optional)", placeholder="e.g., john@school.edu")
             submitted = st.form_submit_button("Add Student", use_container_width=True, type="primary")
 
             if submitted:
                 if student_name.strip():
-                    db.add_student(
-                        name=student_name.strip(),
-                        class_id=selected_class_id,
-                        email=student_email.strip() if student_email else None
-                    )
-                    st.success(f"Student '{student_name}' added!")
-                    st.rerun()
+                    try:
+                        db.add_student(
+                            name=student_name.strip(),
+                            class_id=selected_class_id,
+                            student_id=student_id.strip() if student_id else None,
+                            email=student_email.strip() if student_email else None
+                        )
+                        st.success(f"Student '{student_name}' added!")
+                        st.rerun()
+                    except Exception as e:
+                        if "UNIQUE" in str(e):
+                            st.error(f"Student ID '{student_id}' already exists in this class.")
+                        else:
+                            st.error(f"Error adding student: {e}")
                 else:
                     st.warning("Please enter a student name.")
 
@@ -107,7 +115,7 @@ def render():
         uploaded_file = st.file_uploader(
             "Upload CSV file",
             type=['csv'],
-            help="CSV should have columns: name (required), email (optional)"
+            help="CSV should have columns: name (required), student_id (optional), email (optional)"
         )
 
         if uploaded_file is not None:
@@ -152,10 +160,14 @@ def render():
 
         # Create dataframe for display
         df = pd.DataFrame(students)
-        df = df[['id', 'name', 'email', 'created_at']]
-        df.columns = ['ID', 'Name', 'Email', 'Added']
+        # Handle student_id which might not exist in older databases
+        if 'student_id' not in df.columns:
+            df['student_id'] = None
+        df = df[['id', 'name', 'student_id', 'email', 'created_at']]
+        df.columns = ['ID', 'Name', 'Student ID', 'Email', 'Added']
         df['Added'] = df['Added'].apply(lambda x: x[:10] if x else 'N/A')
         df['Email'] = df['Email'].fillna('-')
+        df['Student ID'] = df['Student ID'].fillna('-')
 
         edited_df = st.data_editor(
             df,
@@ -165,6 +177,7 @@ def render():
             column_config={
                 "ID": st.column_config.NumberColumn("ID", width="small"),
                 "Name": st.column_config.TextColumn("Name", width="large"),
+                "Student ID": st.column_config.TextColumn("Student ID", width="medium", help="Unique identifier"),
                 "Email": st.column_config.TextColumn("Email", width="medium"),
                 "Added": st.column_config.TextColumn("Added", width="small")
             },
@@ -174,11 +187,13 @@ def render():
         if st.button("Save Changes", use_container_width=True, type="primary"):
             for idx, row in edited_df.iterrows():
                 original = df.iloc[idx]
-                if row['Name'] != original['Name'] or row['Email'] != original['Email']:
+                if row['Name'] != original['Name'] or row['Student ID'] != original['Student ID'] or row['Email'] != original['Email']:
                     email = row['Email'] if row['Email'] != '-' else None
+                    student_uid = row['Student ID'] if row['Student ID'] != '-' else None
                     db.update_student(
                         student_id=row['ID'],
                         name=row['Name'],
+                        student_uid=student_uid,
                         email=email
                     )
             st.success("Changes saved!")

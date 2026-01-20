@@ -13,8 +13,8 @@ def render():
         border-radius: 8px;
         margin-bottom: 2rem;
     ">
-        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Assignment Management</h1>
-        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Create and manage assignments for your classes</p>
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: white;">Assignment Management</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem; color: white;">Create and manage assignments for your classes</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -160,11 +160,11 @@ def render():
                     border-radius: 8px;
                     margin-bottom: 1rem;
                 ">
-                    <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600;">{a['name']}</h4>
-                    <div style="font-size: 0.85rem; opacity: 0.9;">
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600; color: white;">{a['name']}</h4>
+                    <div style="font-size: 0.85rem; opacity: 0.9; color: white;">
                         {a['max_points']} pts | Weight: {a['weight']}
                     </div>
-                    <div style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.7;">
+                    <div style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.7; color: white;">
                         Due: {due_text}
                     </div>
                 </div>

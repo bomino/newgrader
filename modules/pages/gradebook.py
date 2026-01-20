@@ -13,8 +13,8 @@ def render():
         border-radius: 8px;
         margin-bottom: 2rem;
     ">
-        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Gradebook</h1>
-        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">View grades, statistics, and export reports</p>
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: white;">Gradebook</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem; color: white;">View grades, statistics, and export reports</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -98,7 +98,8 @@ def render():
     gradebook_data = []
 
     for student in students:
-        row = {"Student": student['name'], "student_id": student['id']}
+        student_uid = student.get('student_id', '-')
+        row = {"Student": student['name'], "Student ID": student_uid, "student_id": student['id']}
         total_weighted = 0
         total_weight = 0
 
@@ -133,6 +134,7 @@ def render():
         "student_id": None,
         "_avg_value": None,
         "Student": st.column_config.TextColumn("Student", width="large"),
+        "Student ID": st.column_config.TextColumn("Student ID", width="medium"),
         "Average": st.column_config.TextColumn("Average", width="small"),
         "Letter": st.column_config.TextColumn("Grade", width="small"),
     }
@@ -162,6 +164,7 @@ def render():
                 border-radius: 4px;
                 font-size: 0.8rem;
                 margin-left: 0.5rem;
+                color: white;
             ">{len(students)} students</span>
         </h3>
     </div>
@@ -173,7 +176,7 @@ def render():
             return "background-color: #ffcccc"
         return ""
 
-    display_cols = ['Student'] + [a['name'] for a in assignments] + ['Average', 'Letter']
+    display_cols = ['Student', 'Student ID'] + [a['name'] for a in assignments] + ['Average', 'Letter']
     display_df = df[display_cols]
 
     st.dataframe(
@@ -213,8 +216,8 @@ def render():
                 border-radius: 8px;
                 text-align: center;
             ">
-                <div style="font-size: 1.75rem; font-weight: 700;">{class_avg:.1f}%</div>
-                <div style="font-size: 0.85rem; opacity: 0.9;">Class Average</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: white;">{class_avg:.1f}%</div>
+                <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Class Average</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -227,8 +230,8 @@ def render():
                 border-radius: 8px;
                 text-align: center;
             ">
-                <div style="font-size: 1.75rem; font-weight: 700;">{max(valid_avgs):.1f}%</div>
-                <div style="font-size: 0.85rem; opacity: 0.9;">Highest</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: white;">{max(valid_avgs):.1f}%</div>
+                <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Highest</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -241,8 +244,8 @@ def render():
                 border-radius: 8px;
                 text-align: center;
             ">
-                <div style="font-size: 1.75rem; font-weight: 700;">{min(valid_avgs):.1f}%</div>
-                <div style="font-size: 0.85rem; opacity: 0.9;">Lowest</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: white;">{min(valid_avgs):.1f}%</div>
+                <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Lowest</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -257,8 +260,8 @@ def render():
                 border-radius: 8px;
                 text-align: center;
             ">
-                <div style="font-size: 1.75rem; font-weight: 700;">{passing}/{len(valid_avgs)}</div>
-                <div style="font-size: 0.85rem; opacity: 0.9;">Passing ({pass_pct:.0f}%)</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: white;">{passing}/{len(valid_avgs)}</div>
+                <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Passing ({pass_pct:.0f}%)</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -304,9 +307,9 @@ def render():
                     border-radius: 8px;
                     text-align: center;
                 ">
-                    <div style="font-size: 1.5rem; font-weight: 700;">{grade}</div>
-                    <div style="font-size: 1.25rem; font-weight: 600;">{count}</div>
-                    <div style="font-size: 0.75rem; opacity: 0.9;">students</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: white;">{grade}</div>
+                    <div style="font-size: 1.25rem; font-weight: 600; color: white;">{count}</div>
+                    <div style="font-size: 0.75rem; opacity: 0.9; color: white;">students</div>
                 </div>
                 """, unsafe_allow_html=True)
 

@@ -177,25 +177,10 @@ def apply_custom_css():
         z-index: 999 !important;
     }
 
-    /* Force sidebar to ALWAYS be expanded */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebar"][aria-expanded="false"],
+    /* Sidebar default styling */
     [data-testid="stSidebar"][aria-expanded="true"] {
         width: 21rem !important;
         min-width: 21rem !important;
-        transform: translateX(0) !important;
-        visibility: visible !important;
-        left: 0 !important;
-        position: fixed !important;
-    }
-
-    /* Override any attempt to hide the sidebar */
-    section[data-testid="stSidebar"] {
-        transform: none !important;
-        width: 21rem !important;
-        min-width: 21rem !important;
-        position: fixed !important;
-        left: 0px !important;
     }
 
     /* Ensure sidebar content area has proper styling */
@@ -250,18 +235,15 @@ def apply_custom_css():
         border-color: rgba(255, 255, 255, 0.2) !important;
     }
 
-    /* SOLUTION: Hide the collapse button to prevent sidebar from being closed */
-    /* This prevents users from getting stuck with no way to re-open */
+    /* Allow collapse button to be visible in Streamlit 1.32.0 */
     [data-testid="stSidebar"] button[kind="header"],
     [data-testid="stSidebar"] button[kind="headerNoPadding"],
     [data-testid="stSidebar"] [data-testid="baseButton-header"],
-    [data-testid="stSidebar"] [data-testid="baseButton-headerNoPadding"],
-    [data-testid="stSidebar"] button:has(svg),
-    [data-testid="stSidebar"] button[title*="Close"],
-    [data-testid="stSidebar"] button[aria-label*="Close"] {
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
+    [data-testid="stSidebar"] [data-testid="baseButton-headerNoPadding"] {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 6px !important;
+        width: 36px !important;
+        height: 36px !important;
     }
 
     [data-testid="stSidebar"] button[kind="headerNoPadding"]:hover,

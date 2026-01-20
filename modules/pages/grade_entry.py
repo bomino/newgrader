@@ -12,8 +12,8 @@ def render():
         border-radius: 8px;
         margin-bottom: 2rem;
     ">
-        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Grade Entry</h1>
-        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Enter and manage student grades</p>
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: white;">Grade Entry</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem; color: white;">Enter and manage student grades</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -103,9 +103,11 @@ def render():
     grade_data = []
     for student in students:
         existing = existing_grades.get(student['id'], {})
+        student_uid = student.get('student_id', '-')  # Get student ID or use dash
         grade_data.append({
             "student_id": student['id'],
             "Student Name": student['name'],
+            "Student ID": student_uid,
             "Points": existing.get('points', None),
             "Comments": existing.get('comments', "") or ""
         })
@@ -128,10 +130,11 @@ def render():
         df,
         use_container_width=True,
         hide_index=True,
-        disabled=["student_id", "Student Name"],
+        disabled=["student_id", "Student Name", "Student ID"],
         column_config={
             "student_id": None,
             "Student Name": st.column_config.TextColumn("Student Name", width="large"),
+            "Student ID": st.column_config.TextColumn("Student ID", width="medium"),
             "Points": st.column_config.NumberColumn(
                 "Points",
                 min_value=0.0,
@@ -196,8 +199,8 @@ def render():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 1.5rem; font-weight: 700;">{graded_count}/{total_students}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Graded</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: white;">{graded_count}/{total_students}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Graded</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -216,8 +219,8 @@ def render():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 1.5rem; font-weight: 700;">{avg_display}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Average</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: white;">{avg_display}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Average</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -236,8 +239,8 @@ def render():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 1.5rem; font-weight: 700;">{high_display}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Highest</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: white;">{high_display}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Highest</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -256,7 +259,7 @@ def render():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 1.5rem; font-weight: 700;">{low_display}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Lowest</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: white;">{low_display}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Lowest</div>
         </div>
         """, unsafe_allow_html=True)

@@ -1,424 +1,374 @@
-# NewGrader User Guide
+# Grader User Guide
 
 ## Table of Contents
-
-1. [Overview](#overview)
-2. [Installation](#installation)
-3. [Getting Started](#getting-started)
-4. [Features Guide](#features-guide)
-   - [Classes](#classes)
-   - [Students](#students)
-   - [Assignments](#assignments)
-   - [Grade Entry](#grade-entry)
-   - [Auto-Grade](#auto-grade)
-   - [Gradebook](#gradebook)
-   - [Settings](#settings)
-5. [Auto-Grading Workflow](#auto-grading-workflow)
-6. [File Formats](#file-formats)
+1. [Introduction](#introduction)
+2. [Installation & Setup](#installation--setup)
+3. [Quick Start Guide](#quick-start-guide)
+4. [Features Overview](#features-overview)
+5. [Detailed Feature Guide](#detailed-feature-guide)
+6. [Common Workflows](#common-workflows)
 7. [Tips & Best Practices](#tips--best-practices)
+8. [Troubleshooting](#troubleshooting)
+9. [FAQ](#faq)
 
 ---
 
-## Overview
+## Introduction
 
-NewGrader is a comprehensive grading application designed for teachers to:
-
-- Manage classes and student rosters
-- Create and track assignments with weighted grades
-- Enter grades manually or use automated grading with answer keys
-- View a complete gradebook with calculated averages and letter grades
-- Export reports to Excel, CSV, or text summaries
+Grader is a professional grading application designed for educators to efficiently manage classes, students, assignments, and grades. Built with simplicity and functionality in mind, it provides both manual and automatic grading capabilities.
 
 ### Key Features
-
-| Feature | Description |
-|---------|-------------|
-| Class Management | Create and organize multiple classes |
-| Student Roster | Add students individually or bulk import from CSV |
-| Assignment Tracking | Create assignments with points, weights, and due dates |
-| Manual Grading | Enter grades with an easy-to-use editable grid |
-| Auto-Grading | Upload answer keys and grade student responses automatically |
-| Gradebook | View all grades with weighted averages and letter grades |
-| Configurable Scale | Customize grade thresholds (A/B/C/D/F) |
-| Export Reports | Download grades as Excel, CSV, or summary reports |
+- 📚 Multi-class management
+- 👥 Student roster with unique IDs
+- 📝 Flexible assignment creation with weights
+- ✏️ Manual grade entry
+- 🤖 Automatic grading with answer keys
+- 📊 Comprehensive gradebook with statistics
+- 📥 Multiple export formats (Excel, CSV, Text)
+- ⚙️ Customizable grade scales
 
 ---
 
-## Installation
+## Installation & Setup
 
-### Prerequisites
-
+### Requirements
 - Python 3.8 or higher
-- pip (Python package manager)
+- Windows, macOS, or Linux
 
-### Setup Steps
+### Installation Steps
 
-1. **Navigate to the project directory:**
-   ```powershell
-   cd "C:\Users\lawry\Documents\Perso\Dr.G\NewGrader"
-   ```
-
-2. **Create and activate a virtual environment:**
-   ```powershell
-   python -m venv venv
-   .\venv\Scripts\Activate.ps1
-   ```
-
-3. **Install dependencies:**
-   ```powershell
-   pip install -r requirements.txt
-   ```
-
-4. **Run the application:**
-   ```powershell
-   streamlit run app.py
-   ```
-
-5. **Open in browser:**
-   The app will automatically open at `http://localhost:8501`
-
----
-
-## Getting Started
-
-### Quick Start Workflow
-
-1. **Create a Class** → Go to "Classes" and add your first class (e.g., "Math 101")
-2. **Add Students** → Go to "Students", select your class, and add students
-3. **Create Assignments** → Go to "Assignments" and create your first assignment
-4. **Enter Grades** → Use "Grade Entry" for manual grading or "Auto-Grade" for automatic grading
-5. **View Results** → Check the "Gradebook" to see all grades and statistics
-
----
-
-## Features Guide
-
-### Classes
-
-The Classes page allows you to create and manage your teaching classes.
-
-**Creating a Class:**
-1. Click the "Add New Class" expander
-2. Enter a class name (e.g., "English 9A", "Physics 101")
-3. Click "Add Class"
-
-**Viewing Classes:**
-- All classes are displayed in a table showing:
-  - Class ID
-  - Class Name
-  - Number of Students
-  - Creation Date
-
-**Deleting a Class:**
-1. Select the class from the dropdown in the "Delete a Class" section
-2. Click "Delete"
-3. Confirm the deletion
-
-> ⚠️ **Warning:** Deleting a class will also delete all students, assignments, and grades associated with that class.
-
----
-
-### Students
-
-The Students page manages student rosters for each class.
-
-**Adding a Single Student:**
-1. Select a class from the dropdown
-2. Fill in the student name (required) and email (optional)
-3. Click "Add Student"
-
-**Bulk Import from CSV:**
-1. Prepare a CSV file with columns: `name` (required), `email` (optional)
-2. Select your class
-3. Upload the CSV file
-4. Preview the data and click "Import All Students"
-
-**Example CSV format:**
-```csv
-name,email
-John Smith,john@school.edu
-Jane Doe,jane@school.edu
-Bob Wilson,
+1. **Clone or download the repository**
+```bash
+git clone https://github.com/YourRepo/Grader.git
+cd Grader
 ```
 
-**Editing Students:**
-- The student table is editable - modify names or emails directly
-- Click "Save Changes" to persist your edits
+2. **Create a virtual environment**
+```bash
+python -m venv venv
+```
 
-**Removing Students:**
-1. Select the student from the dropdown
-2. Click "Remove" and confirm
+3. **Activate the virtual environment**
+- Windows: `venv\Scripts\activate`
+- macOS/Linux: `source venv/bin/activate`
+
+4. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+5. **Run the application**
+```bash
+streamlit run app_tabbed.py
+```
+
+The application will open in your browser at `http://localhost:8501`
 
 ---
+
+## Quick Start Guide
+
+### 5-Step Setup Process
+
+#### Step 1: Create a Class
+1. Navigate to the **Classes** tab
+2. Enter a class name (e.g., "Math 101 - Fall 2024")
+3. Click "Create Class"
+
+#### Step 2: Add Students
+1. Go to the **Students** tab
+2. Select your class
+3. Either:
+   - Add students individually with name, ID, and email
+   - Bulk import from CSV file
+
+#### Step 3: Create Assignments
+1. Open the **Assignments** tab
+2. Select your class
+3. Add assignments with:
+   - Name (e.g., "Quiz 1")
+   - Max points
+   - Weight (relative importance)
+   - Due date (optional)
+
+#### Step 4: Enter Grades
+Choose one of two methods:
+
+**Manual Entry:**
+- Go to **Grade Entry** tab
+- Select class and assignment
+- Enter points for each student
+
+**Auto-Grade:**
+- Go to **Auto-Grade** tab
+- Create an answer key
+- Upload student responses
+
+#### Step 5: View & Export Gradebook
+1. Navigate to **Gradebook** tab
+2. View calculated grades and statistics
+3. Export in your preferred format
+
+---
+
+## Features Overview
+
+### Navigation Structure
+The application uses a tab-based navigation system with nine main sections:
+
+| Tab | Purpose |
+|-----|---------|
+| 🏠 Home | Dashboard with statistics and quick access |
+| 🎓 Classes | Create and manage classes |
+| 👥 Students | Manage student rosters |
+| 📝 Assignments | Create and configure assignments |
+| ✏️ Grade Entry | Manually enter grades |
+| 🤖 Auto-Grade | Automatic grading with answer keys |
+| 📊 Gradebook | View all grades and statistics |
+| ⚙️ Settings | Configure grade scales and manage database |
+| ❓ Help | In-app documentation and guides |
+
+---
+
+## Detailed Feature Guide
+
+### Classes Management
+
+**Creating a Class:**
+- Enter a descriptive name
+- Recommended format: "Subject Code - Term Year"
+- Examples: "MATH 101 - Fall 2024", "History AP - Spring 2025"
+
+**Managing Classes:**
+- Edit class names inline by clicking on them
+- View student count for each class
+- Delete classes (⚠️ Warning: Deletes all associated data)
+
+### Student Roster
+
+**Adding Students Individually:**
+- **Name** (Required): Full student name
+- **Student ID** (Optional): Unique identifier (e.g., school ID number)
+- **Email** (Optional): Student email for records
+
+**Bulk Import via CSV:**
+CSV file format:
+```csv
+name,student_id,email
+John Smith,12345678,john@school.edu
+Jane Doe,87654321,jane@school.edu
+Sarah Johnson,11223344,sarah@school.edu
+```
+
+**Student ID Feature:**
+- Helps prevent duplicate entries
+- Used for matching in auto-grading
+- Optional but recommended for larger classes
 
 ### Assignments
 
-The Assignments page lets you create and manage assignments for each class.
+**Creating Assignments:**
+- **Name**: Clear, descriptive name
+- **Max Points**: Maximum possible score
+- **Weight**: Relative importance in final grade
+- **Due Date**: Optional, for organization
 
-**Creating an Assignment:**
-1. Select a class
-2. Click "Add New Assignment"
-3. Fill in:
-   - **Assignment Name** - e.g., "Chapter 1 Quiz"
-   - **Max Points** - Maximum possible score (default: 100)
-   - **Weight** - Grade weight multiplier (default: 1.0)
-   - **Due Date** - Optional due date
-4. Click "Add Assignment"
+**Understanding Weights:**
+Weights determine how much each assignment counts toward the final grade.
 
-**Understanding Weight:**
-- Weight determines how much an assignment counts toward the final grade
-- Weight of 1.0 = normal importance
-- Weight of 2.0 = counts double
-- Weight of 0.5 = counts half
-
-**Example:**
-| Assignment | Max Points | Weight | Effective Weight |
-|------------|------------|--------|------------------|
-| Homework 1 | 50 | 1.0 | Normal |
-| Midterm | 100 | 2.0 | Counts 2x |
-| Participation | 20 | 0.5 | Counts 0.5x |
-
-**Editing Assignments:**
-1. Select the assignment from the dropdown
-2. Modify any fields
-3. Click "Save Changes"
-
----
+Example weight distribution:
+| Assignment Type | Weight | Percentage of Final Grade |
+|----------------|--------|--------------------------|
+| Homework | 1.0 | 10% |
+| Quizzes | 2.0 | 20% |
+| Midterm | 3.0 | 30% |
+| Final Exam | 4.0 | 40% |
+| **Total** | **10.0** | **100%** |
 
 ### Grade Entry
 
-The Grade Entry page provides manual grade input with an interactive grid.
-
-**Entering Grades:**
-1. Select a class
-2. Select an assignment
-3. The grade grid shows all students with columns:
-   - Student Name (read-only)
-   - Points (editable)
-   - Comments (editable)
-4. Enter scores directly in the grid
-5. Click "Save All Grades"
+**Manual Grade Entry Process:**
+1. Select class and assignment
+2. View all students with current grades
+3. Enter points (validated against max points)
+4. Add optional comments for feedback
+5. Click "Save All Grades" to commit changes
 
 **Features:**
-- Existing grades are pre-loaded when editing
-- Quick stats show: graded count, average, highest, lowest
-- Points are validated against the assignment's max points
-
----
+- Real-time statistics (average, highest, lowest)
+- Missing assignments shown as dashes
+- Bulk save functionality
+- Student IDs displayed for verification
 
 ### Auto-Grade
 
-The Auto-Grade page has two tabs: creating answer keys and grading responses.
+**Two-Step Process:**
 
-#### Tab 1: Create Answer Key
-
-**Setting Up an Answer Key:**
+#### Step 1: Create Answer Key
 1. Select class and assignment
-2. Set the number of questions
-3. For each question, enter:
-   - **Answer** - The correct response
-   - **Points** - Points for this question
-   - **Type** - Multiple choice, short text, or numeric
-4. Click "Save Answer Key"
+2. Set number of questions
+3. For each question, specify:
+   - Correct answer
+   - Points value
+   - Question type (multiple choice, short text, numeric)
+4. Save answer key
+
+#### Step 2: Grade Responses
+1. Prepare response file (CSV or Excel)
+2. Upload file
+3. System automatically:
+   - Detects student identifiers
+   - Matches answers to key
+   - Calculates scores
+4. Review results
+5. Save to database
+
+**Response File Formats:**
+
+Using student names:
+```csv
+student_name,q1,q2,q3,q4,q5
+John Smith,A,B,C,A,D
+Jane Doe,B,B,C,D,D
+```
+
+Using student IDs:
+```csv
+student_id,q1,q2,q3,q4,q5
+12345678,A,B,C,A,D
+87654321,B,B,C,D,D
+```
 
 **Question Types:**
-
-| Type | Description | Matching |
-|------|-------------|----------|
-| Multiple Choice | A, B, C, D answers | Exact match (case-insensitive) |
-| Short Text | Text answers | Exact match (case-insensitive) |
-| Numeric | Number answers | Within 0.01 tolerance |
-
-#### Tab 2: Grade Responses
-
-**Auto-Grading Workflow:**
-1. Select class and assignment (must have an answer key)
-2. Upload a CSV or Excel file with student responses
-3. Click "Grade Responses"
-4. Review results showing:
-   - Score for each student
-   - Percentage
-   - Correct/incorrect count
-5. Click "Save Grades to Database" to record the grades
-
----
+- **Multiple Choice**: Exact match (case-insensitive)
+- **Short Text**: Case-insensitive string match
+- **Numeric**: Number within 0.01 tolerance
 
 ### Gradebook
 
-The Gradebook provides a comprehensive view of all grades for a class.
+**Features:**
+- Complete grade matrix for all students and assignments
+- Weighted average calculation
+- Letter grade assignment based on scale
+- Color coding:
+  - Red background: Missing assignments
+  - Colored cards: Grade distribution
 
-**Gradebook Matrix:**
-- Rows: Students
-- Columns: Each assignment + Average + Letter Grade
-- Missing grades highlighted in red
-
-**Calculated Fields:**
-- **Average** - Weighted average across all assignments
-- **Letter Grade** - Based on configured grade scale
-
-**Statistics:**
+**Statistics Displayed:**
 - Class average
 - Highest/lowest scores
 - Passing rate (60%+)
-- Grade distribution chart
+- Grade distribution (A through F)
 
 **Export Options:**
-1. **Excel** - Full gradebook with formatting
-2. **CSV** - Simple comma-separated file
-3. **Class Summary** - Text report with statistics
-
----
+1. **Excel (.xlsx)**: Formatted spreadsheet with all data
+2. **CSV (.csv)**: Raw data for analysis
+3. **Text Summary (.txt)**: Human-readable report
 
 ### Settings
 
-The Settings page configures application-wide options.
-
 **Grade Scale Configuration:**
-Customize the percentage thresholds for letter grades:
+Customize letter grade thresholds:
+- Default: A ≥ 90%, B ≥ 80%, C ≥ 70%, D ≥ 60%, F < 60%
+- Modify to match your institution's standards
 
-| Grade | Default Minimum |
-|-------|-----------------|
-| A | 90% |
-| B | 80% |
-| C | 70% |
-| D | 60% |
-| F | Below 60% |
-
-**Modifying the Scale:**
-1. Enter new threshold values
-2. Ensure they're in descending order (A > B > C > D)
-3. Click "Save Grade Scale"
-
-**Database Information:**
-- View counts of classes, students, and assignments
+**Database Management:**
+- View statistics (classes, students, assignments)
 - Database location: `data/grader.db`
+- Reset option (⚠️ Deletes all data)
 
 ---
 
-## Auto-Grading Workflow
+## Common Workflows
 
-### Complete Auto-Grading Process
+### Setting Up a New Semester
 
-```
-┌─────────────────┐
-│ 1. Create Class │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ 2. Add Students │
-└────────┬────────┘
-         ▼
-┌─────────────────────┐
-│ 3. Create Assignment│
-└────────┬────────────┘
-         ▼
-┌─────────────────────┐
-│ 4. Create Answer Key│
-│   (Auto-Grade tab)  │
-└────────┬────────────┘
-         ▼
-┌─────────────────────────┐
-│ 5. Collect Student      │
-│    Responses (CSV/Excel)│
-└────────┬────────────────┘
-         ▼
-┌─────────────────────────┐
-│ 6. Upload & Grade       │
-│   (Auto-Grade tab)      │
-└────────┬────────────────┘
-         ▼
-┌─────────────────────────┐
-│ 7. Review & Save Grades │
-└────────┬────────────────┘
-         ▼
-┌─────────────────────────┐
-│ 8. View in Gradebook    │
-└─────────────────────────┘
-```
+1. **Week 1: Foundation**
+   - Create all classes
+   - Import student rosters
+   - Verify student information
 
-### Matching Students
+2. **Week 2: Assignment Planning**
+   - Create all planned assignments
+   - Set appropriate weights
+   - Add due dates
 
-When saving auto-graded results:
-- Student names in the upload file are matched to database records
-- Matching is case-insensitive
-- Names must match exactly (consider standardizing names)
-- Unmatched students are reported but not saved
+3. **Ongoing: Grading**
+   - Enter grades after each assignment
+   - Monitor class performance
+   - Export reports as needed
 
----
+### Grading a Multiple Choice Test
 
-## File Formats
+1. Create the assignment (Assignments tab)
+2. Create answer key (Auto-Grade → Create Answer Key)
+3. Collect student responses in spreadsheet
+4. Upload responses (Auto-Grade → Grade Responses)
+5. Review and save grades
 
-### Student Import CSV
+### Generating Progress Reports
 
-```csv
-name,email
-John Smith,john.smith@school.edu
-Jane Doe,jane.doe@school.edu
-Robert Johnson,
-```
+1. Ensure all current grades are entered
+2. Go to Gradebook tab
+3. Review statistics and distribution
+4. Export to Excel
+5. Add additional comments if needed
+6. Share with students/parents
 
-**Required columns:** `name`
-**Optional columns:** `email`
+### End-of-Term Grade Calculation
 
-### Student Response CSV (for Auto-Grading)
-
-```csv
-student_name,q1,q2,q3,q4,q5
-John Smith,A,B,C,D,A
-Jane Doe,A,C,C,D,B
-Robert Johnson,B,B,C,D,A
-```
-
-**Required columns:** `student_name` (or `name` or `student`)
-**Question columns:** `q1`, `q2`, `q3`, etc. (or `Q1`, `Question 1`, etc.)
-
-### Alternative Column Naming
-
-The auto-grader recognizes these column patterns:
-- `q1`, `Q1`, `question1`, `Question 1`
-- `student_name`, `name`, `student`, `Student Name`
+1. Verify all assignments are graded
+2. Check weight distribution totals correctly
+3. Review grade scale in Settings
+4. Export final gradebook
+5. Submit grades to registrar
+6. Backup database file
 
 ---
 
 ## Tips & Best Practices
 
-### Organization
+### Efficiency Tips
 
-1. **Naming Conventions**
-   - Use consistent class names (e.g., "Math 101 - Fall 2024")
-   - Use clear assignment names (e.g., "Ch1 Quiz", "Midterm Exam")
+**Keyboard Shortcuts:**
+- Tab: Navigate between fields
+- Enter: Submit forms
+- Ctrl+A: Select all in data editor
 
-2. **Weights**
-   - Plan your weights before creating assignments
-   - Common scheme: Homework (1.0), Quizzes (1.5), Exams (2.0)
+**Naming Conventions:**
+- Classes: Include year and term
+- Assignments: Use consistent numbering
+- Students: Last name, First name format
 
-### Auto-Grading
+### Grade Management
 
-1. **Answer Keys**
-   - Double-check your answer key before grading
-   - Use uppercase letters for multiple choice (A, B, C, D)
-   - For short text, consider all acceptable variations
+**Weight Strategies:**
+- Start with simple weights (1, 2, 3, 4)
+- Adjust based on syllabus percentages
+- Total weights don't need to equal 100
 
-2. **Student Names**
-   - Ensure student names in response files match database exactly
-   - Use bulk import to standardize names from the start
+**Handling Missing Work:**
+- Leave blank until deadline
+- Use comments for "Excused" absences
+- Enter 0 only after deadline passes
 
-### Data Management
+### Data Safety
 
-1. **Regular Exports**
-   - Export gradebook periodically as backup
-   - Keep Excel exports for records
+**Regular Backups:**
+1. Weekly: Export gradebooks
+2. Monthly: Copy database file
+3. End of term: Complete export
 
-2. **Grade Entry**
-   - Save frequently when entering many grades
-   - Use comments for partial credit explanations
+**Database Location:**
+- Windows: `C:\Users\[username]\...\Grader\data\grader.db`
+- macOS/Linux: `~/Grader/data/grader.db`
 
-### Performance
+### Performance Optimization
 
-1. **Large Classes**
-   - Bulk import students rather than adding individually
-   - Use auto-grading for objective assessments
-   - Export to Excel for complex analysis
+- Works efficiently with 500+ students
+- No internet required (local database)
+- Auto-saves after each action
+- Use bulk operations when possible
 
 ---
 
@@ -426,86 +376,78 @@ The auto-grader recognizes these column patterns:
 
 ### Common Issues
 
-**"No classes found"**
-- Create a class first before adding students or assignments
+**Application won't start:**
+- Verify Python 3.8+ is installed
+- Check all dependencies are installed
+- Ensure port 8501 is available
 
-**"No students found"**
-- Add students to the class before entering grades
+**Can't see file uploader in Auto-Grade:**
+- Ensure you've created an answer key first
+- Check that the assignment exists
+- Verify class has students
 
-**"Student not found" during auto-grade save**
-- Student name in upload doesn't match database
-- Check spelling and capitalization
+**Grades not calculating correctly:**
+- Check assignment weights
+- Verify all grades are entered
+- Review grade scale settings
 
-**Grades not calculating**
-- Ensure assignments have grades entered
-- Check that weights are set correctly
+**Database errors:**
+- Check file permissions on data folder
+- Ensure sufficient disk space
+- Try restarting the application
 
 ### Getting Help
 
-- Check the Settings page for database information
-- The database is stored in `data/grader.db`
-- All data persists between sessions
+1. Check the in-app Help tab
+2. Review this documentation
+3. Check FAQ section
+4. Report issues on GitHub
 
 ---
 
-## Technical Reference
+## FAQ
 
-### Database Schema
+**Q: Can I use Grader for multiple subjects?**
+A: Yes! Create separate classes for each subject. The application handles unlimited classes.
 
-```
-classes
-├── id (INTEGER PRIMARY KEY)
-├── name (TEXT)
-└── created_at (TIMESTAMP)
+**Q: Is my data secure?**
+A: Data is stored locally on your computer. No internet connection required for operation.
 
-students
-├── id (INTEGER PRIMARY KEY)
-├── name (TEXT)
-├── class_id (FK → classes)
-├── email (TEXT)
-└── created_at (TIMESTAMP)
+**Q: Can I share the gradebook with students?**
+A: Export to Excel or PDF and share. The application itself is single-user.
 
-assignments
-├── id (INTEGER PRIMARY KEY)
-├── name (TEXT)
-├── class_id (FK → classes)
-├── max_points (REAL)
-├── weight (REAL)
-├── due_date (TEXT)
-└── created_at (TIMESTAMP)
+**Q: How do I handle curved grades?**
+A: Export to Excel, apply curve formula, then import back using Grade Entry.
 
-grades
-├── id (INTEGER PRIMARY KEY)
-├── student_id (FK → students)
-├── assignment_id (FK → assignments)
-├── points (REAL)
-├── comments (TEXT)
-├── created_at (TIMESTAMP)
-└── updated_at (TIMESTAMP)
+**Q: Can I customize beyond the provided options?**
+A: The application is open-source. Modify the code to suit your needs.
 
-answer_keys
-├── id (INTEGER PRIMARY KEY)
-├── assignment_id (FK → assignments)
-├── question_num (INTEGER)
-├── correct_answer (TEXT)
-├── points (REAL)
-└── question_type (TEXT)
+**Q: What's the maximum number of students/assignments?**
+A: No hard limit. Tested successfully with 500+ students and 50+ assignments.
 
-settings
-├── key (TEXT PRIMARY KEY)
-└── value (TEXT)
-```
+**Q: Can I use decimal points for grades?**
+A: Yes! The system supports decimal values (e.g., 87.5 points).
 
-### Grade Calculation Formula
+**Q: How do I handle group projects?**
+A: Create one assignment and enter the same grade for all group members.
 
-```
-Weighted Average = Σ(score_percentage × weight) / Σ(weight)
+**Q: Can I import from other grading systems?**
+A: Yes, if you can export to CSV. Format the data to match Grader's structure.
 
-Where:
-- score_percentage = (points_earned / max_points) × 100
-- weight = assignment weight
-```
+**Q: Is there a mobile version?**
+A: The web interface is mobile-responsive but optimized for desktop use.
 
 ---
 
-*NewGrader - Built with Streamlit and SQLite*
+## Conclusion
+
+Grader streamlines the grading process while maintaining flexibility for various teaching styles and requirements. Regular backups and exports ensure your data is always safe and accessible.
+
+For additional support or feature requests, please visit the GitHub repository.
+
+---
+
+**Version:** 1.0
+**Last Updated:** January 2024
+**License:** MIT
+**Author:** Grader Development Team

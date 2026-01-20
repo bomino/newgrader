@@ -12,8 +12,8 @@ def render():
         border-radius: 8px;
         margin-bottom: 2rem;
     ">
-        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Auto-Grade</h1>
-        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Create answer keys and auto-grade student responses</p>
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: white;">Auto-Grade</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem; color: white;">Create answer keys and auto-grade student responses</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -260,7 +260,7 @@ def render_grading_tab():
     ">
         <h4 style="margin: 0 0 0.5rem 0; color: #1e3a5f; font-size: 1rem;">Upload Student Responses</h4>
         <p style="color: #718096; font-size: 0.85rem; margin: 0;">
-            Upload a CSV or Excel file with columns: <code>student_name, q1, q2, q3, ...</code>
+            Upload a CSV or Excel file with columns: <code>student_name</code> or <code>student_id</code>, plus <code>q1, q2, q3, ...</code>
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -291,20 +291,28 @@ def render_grading_tab():
             """, unsafe_allow_html=True)
             st.dataframe(responses_df.head(), use_container_width=True)
 
-            # Find student name column
+            # Find student name or ID column
             name_col = None
+            id_col = None
             for col in responses_df.columns:
-                if 'name' in col.lower() or 'student' in col.lower():
+                col_lower = col.lower()
+                if 'student_id' in col_lower or 'studentid' in col_lower or col_lower == 'id':
+                    id_col = col
+                elif 'name' in col_lower or 'student' in col_lower:
                     name_col = col
-                    break
 
-            if not name_col:
+            # If neither is found, use first column as name column
+            if not name_col and not id_col:
                 name_col = responses_df.columns[0]
-                st.info(f"Using '{name_col}' as student name column.")
+                st.info(f"Using '{name_col}' as student identifier column.")
+            elif id_col:
+                st.info(f"Found student ID column: '{id_col}'")
+            elif name_col:
+                st.info(f"Found student name column: '{name_col}'")
 
             # Grade the responses
             if st.button("Grade Responses", type="primary", use_container_width=True):
-                results = grade_responses(responses_df, name_col, answer_key, selected_assignment)
+                results = grade_responses(responses_df, name_col, id_col, answer_key, selected_assignment)
 
                 # Store results in session state
                 st.session_state['grading_results'] = results
@@ -320,7 +328,7 @@ def render_grading_tab():
         display_grading_results()
 
 
-def grade_responses(responses_df, name_col, answer_key, assignment):
+def grade_responses(responses_df, name_col, id_col, answer_key, assignment):
     """Grade student responses against the answer key."""
     results = []
 
@@ -328,7 +336,15 @@ def grade_responses(responses_df, name_col, answer_key, assignment):
     key_lookup = {q['question_num']: q for q in answer_key}
 
     for idx, row in responses_df.iterrows():
-        student_name = str(row[name_col]).strip()
+        # Get student identifier (name and/or ID)
+        student_name = str(row[name_col]).strip() if name_col and name_col in row.index else None
+        student_id = str(row[id_col]).strip() if id_col and id_col in row.index else None
+
+        # Use whichever identifier we have
+        if not student_name and not student_id:
+            continue  # Skip this row if no identifier found
+
+        display_name = student_name if student_name else f"ID: {student_id}"
         total_points = 0
         max_points = 0
         details = []
@@ -385,6 +401,8 @@ def grade_responses(responses_df, name_col, answer_key, assignment):
 
         results.append({
             'student_name': student_name,
+            'student_id': student_id,
+            'display_name': display_name,
             'raw_score': total_points,
             'max_raw': max_points,
             'scaled_score': round(scaled_score, 2),
@@ -417,7 +435,7 @@ def display_grading_results():
     summary_data = []
     for r in results:
         summary_data.append({
-            "Student": r['student_name'],
+            "Student": r['display_name'],
             "Score": r['scaled_score'],
             "Percentage": f"{r['percentage']}%",
             "Correct": f"{sum(1 for d in r['details'] if d['is_correct'])}/{len(r['details'])}"
@@ -440,8 +458,8 @@ def display_grading_results():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 1.75rem; font-weight: 700;">{sum(scores)/len(scores):.1f}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Average</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: white;">{sum(scores)/len(scores):.1f}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Average</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -454,8 +472,8 @@ def display_grading_results():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 1.75rem; font-weight: 700;">{max(scores):.1f}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Highest</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: white;">{max(scores):.1f}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Highest</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -468,8 +486,8 @@ def display_grading_results():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 1.75rem; font-weight: 700;">{min(scores):.1f}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Lowest</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: white;">{min(scores):.1f}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Lowest</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -483,8 +501,8 @@ def display_grading_results():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 1.75rem; font-weight: 700;">{passing}/{len(results)}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Passing (60%+)</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: white;">{passing}/{len(results)}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Passing (60%+)</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -494,18 +512,30 @@ def display_grading_results():
     if st.button("Save Grades to Database", type="primary", use_container_width=True):
         # Get students from class
         students = db.get_students_by_class(class_id)
-        student_lookup = {s['name'].lower(): s['id'] for s in students}
+
+        # Create lookups for both name and student_id
+        name_lookup = {s['name'].lower(): s['id'] for s in students if s.get('name')}
+        id_lookup = {str(s['student_id']).lower(): s['id'] for s in students if s.get('student_id')}
 
         saved_count = 0
         not_found = []
 
         for r in results:
-            student_id = student_lookup.get(r['student_name'].lower())
-            if student_id:
-                db.set_grade(student_id, assignment_id, r['scaled_score'])
+            db_student_id = None
+
+            # Try to match by student_id first
+            if r['student_id']:
+                db_student_id = id_lookup.get(str(r['student_id']).lower())
+
+            # If not found by ID, try by name
+            if not db_student_id and r['student_name']:
+                db_student_id = name_lookup.get(r['student_name'].lower())
+
+            if db_student_id:
+                db.set_grade(db_student_id, assignment_id, r['scaled_score'])
                 saved_count += 1
             else:
-                not_found.append(r['student_name'])
+                not_found.append(r['display_name'])
 
         if saved_count > 0:
             st.success(f"Saved {saved_count} grades to database!")
@@ -524,7 +554,7 @@ def display_grading_results():
                 margin-bottom: 0.5rem;
                 border-left: 4px solid #1e3a5f;
             ">
-                <strong>{r['student_name']}</strong> - {r['scaled_score']} pts ({r['percentage']}%)
+                <strong>{r['display_name']}</strong> - {r['scaled_score']} pts ({r['percentage']}%)
             </div>
             """, unsafe_allow_html=True)
             details_df = pd.DataFrame(r['details'])

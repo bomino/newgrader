@@ -42,10 +42,12 @@ def init_db():
             CREATE TABLE IF NOT EXISTS students (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
+                student_id TEXT,
                 class_id INTEGER NOT NULL,
                 email TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+                FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
+                UNIQUE(class_id, student_id)
             )
         """)
 
@@ -100,6 +102,33 @@ def init_db():
                 value TEXT NOT NULL
             )
         """)
+
+        conn.commit()
+
+        # Run migrations for existing databases
+        migrate_database(conn)
+
+
+def migrate_database(conn):
+    """Migrate existing databases to add new fields."""
+    cursor = conn.cursor()
+
+    # Check if student_id column exists
+    cursor.execute("PRAGMA table_info(students)")
+    columns = [col[1] for col in cursor.fetchall()]
+
+    if 'student_id' not in columns:
+        # Add student_id column to existing students table
+        cursor.execute("ALTER TABLE students ADD COLUMN student_id TEXT")
+
+        # Create index for better performance
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_student_id ON students(student_id)")
+
+        # Note: We can't add the UNIQUE constraint to existing tables via ALTER TABLE
+        # but new databases will have it from the CREATE TABLE statement
+        conn.commit()
+        print("Database migrated: Added student_id column to students table")
+
 
 # ==================== CLASS OPERATIONS ====================
 
@@ -171,29 +200,29 @@ def get_student_by_id(student_id):
         row = cursor.fetchone()
         return dict(row) if row else None
 
-def add_student(name, class_id, email=None):
+def add_student(name, class_id, student_id=None, email=None):
     """Add a new student."""
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO students (name, class_id, email) VALUES (?, ?, ?)",
-            (name, class_id, email)
+            "INSERT INTO students (name, student_id, class_id, email) VALUES (?, ?, ?, ?)",
+            (name, student_id, class_id, email)
         )
         return cursor.lastrowid
 
-def update_student(student_id, name, class_id=None, email=None):
+def update_student(student_id, name, student_uid=None, class_id=None, email=None):
     """Update a student."""
     with get_connection() as conn:
         cursor = conn.cursor()
         if class_id is not None:
             cursor.execute(
-                "UPDATE students SET name = ?, class_id = ?, email = ? WHERE id = ?",
-                (name, class_id, email, student_id)
+                "UPDATE students SET name = ?, student_id = ?, class_id = ?, email = ? WHERE id = ?",
+                (name, student_uid, class_id, email, student_id)
             )
         else:
             cursor.execute(
-                "UPDATE students SET name = ?, email = ? WHERE id = ?",
-                (name, email, student_id)
+                "UPDATE students SET name = ?, student_id = ?, email = ? WHERE id = ?",
+                (name, student_uid, email, student_id)
             )
         return cursor.rowcount > 0
 
@@ -205,15 +234,15 @@ def delete_student(student_id):
         return cursor.rowcount > 0
 
 def bulk_add_students(students, class_id):
-    """Bulk add students to a class. students is a list of dicts with 'name' and optional 'email'."""
+    """Bulk add students to a class. students is a list of dicts with 'name', optional 'student_id' and 'email'."""
     with get_connection() as conn:
         cursor = conn.cursor()
         added = 0
         for student in students:
             try:
                 cursor.execute(
-                    "INSERT INTO students (name, class_id, email) VALUES (?, ?, ?)",
-                    (student.get('name'), class_id, student.get('email'))
+                    "INSERT INTO students (name, student_id, class_id, email) VALUES (?, ?, ?, ?)",
+                    (student.get('name'), student.get('student_id'), class_id, student.get('email'))
                 )
                 added += 1
             except sqlite3.IntegrityError:

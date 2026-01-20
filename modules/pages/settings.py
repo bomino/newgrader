@@ -11,8 +11,8 @@ def render():
         border-radius: 8px;
         margin-bottom: 2rem;
     ">
-        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700;">Settings</h1>
-        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Configure your grading preferences</p>
+        <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: white;">Settings</h1>
+        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.95rem; color: white;">Configure your grading preferences</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -50,6 +50,7 @@ def render():
                     text-align: center;
                     font-weight: 700;
                     margin-bottom: 0.5rem;
+                    color: white;
                 ">A</div>
                 """, unsafe_allow_html=True)
                 a_threshold = st.number_input(
@@ -71,6 +72,7 @@ def render():
                     text-align: center;
                     font-weight: 700;
                     margin-bottom: 0.5rem;
+                    color: white;
                 ">B</div>
                 """, unsafe_allow_html=True)
                 b_threshold = st.number_input(
@@ -92,6 +94,7 @@ def render():
                     text-align: center;
                     font-weight: 700;
                     margin-bottom: 0.5rem;
+                    color: white;
                 ">C</div>
                 """, unsafe_allow_html=True)
                 c_threshold = st.number_input(
@@ -113,6 +116,7 @@ def render():
                     text-align: center;
                     font-weight: 700;
                     margin-bottom: 0.5rem;
+                    color: white;
                 ">D</div>
                 """, unsafe_allow_html=True)
                 d_threshold = st.number_input(
@@ -217,8 +221,8 @@ def render():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 2rem; font-weight: 700;">{counts.get('classes', 0)}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Classes</div>
+            <div style="font-size: 2rem; font-weight: 700; color: white;">{counts.get('classes', 0)}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Classes</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -231,8 +235,8 @@ def render():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 2rem; font-weight: 700;">{counts.get('students', 0)}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Students</div>
+            <div style="font-size: 2rem; font-weight: 700; color: white;">{counts.get('students', 0)}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Students</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -245,8 +249,8 @@ def render():
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 2rem; font-weight: 700;">{counts.get('assignments', 0)}</div>
-            <div style="font-size: 0.85rem; opacity: 0.9;">Assignments</div>
+            <div style="font-size: 2rem; font-weight: 700; color: white;">{counts.get('assignments', 0)}</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; color: white;">Assignments</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -283,8 +287,8 @@ def render():
         border-radius: 8px;
         text-align: center;
     ">
-        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">NewGrader</h3>
-        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Professional Grading Application</p>
-        <p style="margin: 1rem 0 0 0; font-size: 0.8rem; opacity: 0.7;">Built with Streamlit & SQLite</p>
+        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; color: white;">Grader</h3>
+        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem; color: white;">Professional Grading Application</p>
+        <p style="margin: 1rem 0 0 0; font-size: 0.8rem; opacity: 0.7; color: white;">Built with Streamlit & SQLite</p>
     </div>
     """, unsafe_allow_html=True)
