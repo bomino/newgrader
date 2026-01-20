@@ -1,10 +1,21 @@
-# NewGrader - Technical Documentation
+# Grader - Technical Documentation
 
 ## Project Overview
 
-A Streamlit-based grading application for teachers to manage students, assignments, and grades with auto-grading capabilities.
+A professional Streamlit-based grading application for educators to manage classes, students, assignments, and grades with comprehensive auto-grading capabilities.
 
-**Repository:** https://github.com/bomino/newgrader
+**Repository:** https://github.com/bomino/grader
+
+## Recent Changes (Version 1.0)
+
+- **Tab-Based Navigation**: Replaced sidebar with intuitive tab navigation for better UX
+- **Student ID Support**: Added unique student identifiers for academic institutions
+- **Database Migrations**: Automatic schema updates for existing databases
+- **Comprehensive Help**: Built-in documentation with quick start guide and workflows
+- **WCAG Compliance**: Ensured white text on all colored backgrounds for accessibility
+- **Professional Footer**: Added application footer with version information
+- **Improved Statistics**: Dashboard now shows total grades count
+- **Better Error Handling**: Clear guidance when prerequisites are missing
 
 ## Tech Stack
 
@@ -18,8 +29,8 @@ A Streamlit-based grading application for teachers to manage students, assignmen
 ## Project Structure
 
 ```
-NewGrader/
-├── app.py                    # Main entry point, routing, home dashboard
+Grader/
+├── app.py                    # Main entry point with tab navigation
 ├── requirements.txt          # Python dependencies
 ├── pytest.ini               # Pytest configuration
 ├── README.md                # User documentation
@@ -29,24 +40,28 @@ NewGrader/
 ├── data/
 │   └── grader.db            # SQLite database (auto-created)
 │
+├── docs/
+│   └── USER_GUIDE.md        # Comprehensive user guide
+│
 ├── modules/
 │   ├── __init__.py
-│   ├── database.py          # All database operations
-│   ├── styles.py            # CSS theming (Navy Blue & White)
+│   ├── database.py          # All database operations & migrations
+│   ├── styles_tabbed.py     # CSS theming for tab-based UI
 │   └── pages/
 │       ├── __init__.py
 │       ├── classes.py       # Class management UI
-│       ├── students.py      # Student roster UI
+│       ├── students.py      # Student roster with IDs
 │       ├── assignments.py   # Assignment management UI
 │       ├── grade_entry.py   # Manual grade entry UI
 │       ├── auto_grade.py    # Answer keys & auto-grading UI
 │       ├── gradebook.py     # Gradebook view & exports
-│       └── settings.py      # Grade scale configuration
+│       ├── settings.py      # Grade scale configuration
+│       └── help_guide.py    # In-app help documentation
 │
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py          # Pytest fixtures
-│   ├── test_sidebar.py      # Sidebar visibility tests
+│   ├── test_sidebar.py      # Legacy tests (to be updated)
 │   └── screenshots/         # Test screenshots
 │
 └── venv/                    # Virtual environment (not in git)
@@ -83,9 +98,13 @@ pytest tests/ -v
 
 ## UI Theming
 
+### Navigation System
+
+The application uses a **tab-based navigation system** instead of sidebar navigation, providing a cleaner and more accessible interface.
+
 ### Color Palette
 
-The application uses a professional Navy Blue & White theme defined in `modules/styles.py`:
+The application uses a professional Navy Blue & White theme defined in `modules/styles_tabbed.py`:
 
 ```python
 COLORS = {
@@ -106,19 +125,18 @@ COLORS = {
 
 ### Styling Module
 
-`modules/styles.py` provides:
-- `apply_custom_css()` - Applies global CSS styles
-- `get_page_header_style()` - Standard page header styling
-- `get_card_style()` - Standard card styling
-- `get_stat_card_style(variant)` - Stat card styling by variant
+`modules/styles_tabbed.py` provides:
+- `apply_custom_css()` - Applies global CSS styles for tab navigation
+- `get_stat_card_style(variant)` - Colored stat card styling
 
 ### CSS Features
 
-- Navy Blue sidebar with white text
-- Prominent expand/collapse button (32x48px)
-- Consistent page headers
+- Tab-based navigation with clear visual hierarchy
+- WCAG-compliant white text on all colored backgrounds
+- Consistent Navy Blue page headers
+- Professional card and stat components
 - Styled form inputs and buttons
-- Responsive design
+- Responsive design optimized for desktop use
 
 ## Database Schema
 
@@ -136,11 +154,13 @@ CREATE TABLE classes (
 CREATE TABLE students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
+    student_id TEXT,  -- Unique identifier (e.g., university ID)
     class_id INTEGER NOT NULL,
     email TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
 );
+CREATE INDEX idx_student_id ON students(student_id);
 
 -- Assignments table
 CREATE TABLE assignments (
@@ -234,6 +254,7 @@ All database operations are centralized in `modules/database.py`:
 # Connection management
 get_connection()      # Context manager for DB connections
 init_db()            # Initialize tables on startup
+migrate_database()   # Apply migrations to existing databases
 
 # CRUD Operations (per entity)
 get_all_*()          # List all records
@@ -243,12 +264,34 @@ update_*(id, ...)    # Update existing record
 delete_*(id)         # Delete record
 
 # Special operations
-bulk_add_students()  # Bulk insert from CSV
+bulk_add_students()  # Bulk insert from CSV with student IDs
 bulk_set_grades()    # Upsert multiple grades
 get_grade_scale()    # Get JSON settings
 set_grade_scale()    # Save JSON settings
-get_total_counts()   # Dashboard statistics
+get_total_counts()   # Dashboard statistics (returns dict)
 ```
+
+### Database Migrations
+
+The application supports automatic database migrations to update existing databases with new features:
+
+```python
+def migrate_database(conn):
+    """Apply migrations to existing databases."""
+    cursor = conn.cursor()
+
+    # Check if student_id column exists
+    cursor.execute("PRAGMA table_info(students)")
+    columns = [col[1] for col in cursor.fetchall()]
+
+    if 'student_id' not in columns:
+        # Add student_id column to existing databases
+        cursor.execute("ALTER TABLE students ADD COLUMN student_id TEXT")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_student_id ON students(student_id)")
+        conn.commit()
+```
+
+Migrations run automatically during `init_db()` to ensure backward compatibility.
 
 ### State Management
 
@@ -348,18 +391,20 @@ def get_letter_grade(percentage, scale):
 
 ## Adding New Features
 
-### Adding a New Page
+### Adding a New Tab
 
 1. Create `modules/pages/newpage.py` with a `render()` function
 2. Import in `app.py`: `from modules.pages import newpage`
-3. Add to `PAGES` dict and routing `elif` block
-4. Follow the Navy Blue header pattern for consistency
+3. Add a new tab to the `st.tabs()` list in `app.py`
+4. Add a new `with tabs[n]:` block calling `newpage.render()`
+5. Follow the Navy Blue header pattern for consistency
 
 ### Adding a New Database Table
 
 1. Add `CREATE TABLE` in `init_db()` in `database.py`
 2. Add CRUD functions following existing patterns
-3. Delete `data/grader.db` to recreate schema (or use migrations)
+3. For existing databases, add a migration in `migrate_database()`
+4. Delete `data/grader.db` to recreate schema (or migrations will handle it)
 
 ### Adding New Settings
 
@@ -397,6 +442,39 @@ def get_letter_grade(percentage, scale):
 - Return `dict(row)` for single records, `[dict(row) for row in rows]` for lists
 - Use `ON CONFLICT ... DO UPDATE` for upserts
 
+## Key Features
+
+### Student ID Support
+
+Students can have unique identifiers (e.g., university ID numbers) in addition to names:
+- Optional but recommended for larger classes
+- Used for matching in auto-grading
+- Helps prevent duplicate entries
+- Indexed for fast lookups
+
+### Auto-Grading with Student ID Matching
+
+The auto-grade system can match students by either:
+- Student name (exact match)
+- Student ID (if provided)
+- Flexible CSV/Excel format support
+
+### Comprehensive Help System
+
+The application includes an in-app help guide (`modules/pages/help_guide.py`) with:
+- Quick Start guide for new users
+- Feature explanations with examples
+- Common workflows and best practices
+- FAQ section
+- Tips & Tricks for efficient use
+
+### Export Capabilities
+
+Multiple export formats for gradebook data:
+- **Excel (.xlsx)**: Formatted spreadsheet with statistics
+- **CSV (.csv)**: Raw data for further analysis
+- **Text Summary (.txt)**: Human-readable report
+
 ## Known Limitations
 
 - Single-user application (no authentication)
@@ -406,16 +484,24 @@ def get_letter_grade(percentage, scale):
 
 ## Troubleshooting
 
-### Sidebar Not Visible
-- Check browser console for CSS errors
+### Navigation Issues
+- Tab navigation requires Streamlit 1.32.0 or higher
 - Hard refresh (Ctrl+Shift+R) to clear cache
-- Verify `styles.apply_custom_css()` is called in `app.py`
+- Verify `styles_tabbed.apply_custom_css()` is called in `app.py`
 
 ### Database Errors
-- Delete `data/grader.db` to recreate schema
+- Migrations handle schema updates automatically
+- Delete `data/grader.db` to recreate schema from scratch
 - Check file permissions on `data/` directory
+
+### Auto-Grade File Uploader Not Visible
+- Ensure you've created a class first
+- Create at least one assignment for the class
+- Create an answer key before uploading responses
+- Add at least one student to the class
 
 ### Test Failures
 - Ensure Streamlit is running on port 8502
 - Wait for app to fully load (tests have 3s timeout)
 - Check `tests/screenshots/` for visual debugging
+- Note: Some tests may need updating for tab navigation
